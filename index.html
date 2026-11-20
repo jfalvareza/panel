@@ -111,6 +111,25 @@ button{font-family:inherit}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;padding:4px 16px 26px;font-size:10.5px;letter-spacing:.08em;color:#6f7c87}
 .legend span{display:flex;align-items:center;gap:6px}
 .legend i{width:16px;height:10px;display:inline-block;border-radius:1px}
+.ctl button.del{color:#8a1c12;font-size:11px;font-weight:700}
+.ctl button.del:hover{background:#b8160b;color:#fff}
+.baybtn{margin-left:10px;align-self:center;background:#1c2126;border:1px solid #56616b;color:#b9c3cc;font-size:9.5px;letter-spacing:.14em;padding:3px 7px;cursor:pointer;border-radius:2px;font-family:var(--mono)}
+.baybtn:hover{border-color:var(--red);color:#ffb3aa}
+.toast{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:5;display:flex;align-items:center;gap:12px;background:#0c0f12;border:1px solid var(--amber);box-shadow:0 6px 20px rgba(0,0,0,.6);padding:9px 12px;font-size:12px;letter-spacing:.08em;color:#e6ebef;max-width:94vw}
+.toast button{background:none;border:1px solid #46515b;color:var(--amber);font:inherit;letter-spacing:.12em;padding:6px 10px;cursor:pointer;border-radius:2px;white-space:nowrap}
+.toast button:hover{background:#2a323a}
+/* Aproximación final */
+.strip.final{animation:approach 1.1s ease-in-out infinite}
+.strip.final .holder{animation:holderBlink 1.1s steps(2) infinite}
+.tag.t-final{font-size:8.5px;letter-spacing:0;padding:0 2px;color:#fff;background:#c46a00;border-color:#c46a00;animation:blink 1.1s steps(2) infinite}
+.cnt.final{border-color:var(--amber);color:#ffd88a;animation:cntBlink 1.1s steps(2) infinite}.cnt.final b{color:var(--amber)}
+.appsel{background:#0a0d10;border:1px solid #39424a;color:var(--amber);font-family:var(--mono);font-size:11px;padding:4px 6px;border-radius:2px;letter-spacing:.06em}
+.brw td.blink{animation:blink 1s steps(2) infinite;color:#ffff55}
+.brw td.lateD{color:#ff5555}
+@keyframes approach{0%,100%{box-shadow:0 0 0 2px rgba(255,176,0,.95),0 0 14px rgba(255,176,0,.55),0 2px 3px rgba(0,0,0,.6)}50%{box-shadow:0 0 0 2px rgba(255,176,0,.15),0 2px 3px rgba(0,0,0,.6)}}
+@keyframes holderBlink{50%{filter:brightness(1.7) saturate(.4)}}
+@keyframes cntBlink{50%{border-color:#39424a}}
+@media (prefers-reduced-motion:reduce){.strip.final{animation:none;box-shadow:0 0 0 2px var(--amber),0 2px 3px rgba(0,0,0,.6)}.strip.final .holder,.tag.t-final,.cnt.final,.brw td.blink{animation:none}}
 @keyframes blink{50%{opacity:.15}}
 @keyframes flash{0%{box-shadow:0 0 0 3px var(--amber),0 0 18px var(--amber)}100%{box-shadow:0 2px 3px rgba(0,0,0,.6)}}
 @media (max-width:560px){
@@ -169,7 +188,7 @@ select.f option{background:#aaaaaa;color:#000}
 .msgline{flex:none;color:#fff;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 1ch;min-height:1.25em}
 .msgline.err{color:#ffff55;background:#aa0000}
 .msgline.ok{color:#55ff55}
-.fkeys{flex:none;display:flex;flex-wrap:wrap;background:#000;font-size:.86em;padding-bottom:env(safe-area-inset-bottom)}
+.fkeys{flex:none;display:flex;flex-wrap:wrap;background:#000;font-size:.8em;padding-bottom:env(safe-area-inset-bottom)}
 #dbase .fkeys button{display:flex;align-items:stretch;flex:1 1 auto;min-height:1.6em}
 .fkeys b{color:#fff;font-weight:normal;padding:0 .4ch 0 .9ch;display:flex;align-items:center}
 .fkeys span{background:#00aaaa;color:#000;padding:0 .7ch;flex:1;display:flex;align-items:center;white-space:nowrap}
@@ -186,6 +205,11 @@ select.f option{background:#aaaaaa;color:#000}
 .brw tr.del td{color:#ff5555}
 .brw tr.del.sel td{color:#aa0000}
 .brw tr.dn td{color:#8888cc}
+.brw tr.mk td{color:#ffff55}
+.brw tr.mk.sel td{color:#000;background:#ffff55}
+.brw td.bm{cursor:pointer;text-align:center;min-width:3ch}
+#dbase .msgline .undo{background:#aaaaaa;color:#000;padding:0 1ch;margin-left:1ch}
+#dbase .msgline .undo:hover{background:#ffff55}
 .ddm{position:absolute;z-index:30;min-width:32ch;background:#aaaaaa;color:#000;border:4px double #000;box-shadow:1ch .5em 0 rgba(0,0,0,.65);padding:.15em 0}
 #dbase .dd{display:flex;width:100%;justify-content:space-between;gap:3ch;padding:0 1.2ch;text-align:left;color:#000;white-space:nowrap}
 #dbase .dd.on{background:#0000aa;color:#fff}
@@ -253,6 +277,8 @@ select.f option{background:#aaaaaa;color:#000}
     <div id="chips" class="chips"></div>
     <input id="q" class="search" type="search" placeholder="BUSCAR INDICATIVO / TEXTO" autocomplete="off" spellcheck="false">
     <label class="toggle"><input type="checkbox" id="showDone"> VER ATERRIZADAS</label>
+    <label class="toggle" title="Cuántos días antes del plazo empieza a parpadear la ficha">APROX. FINAL
+      <select id="appDays" class="appsel"><option value="0">EL MISMO DÍA</option><option value="1">1 DÍA ANTES</option><option value="2">2 DÍAS ANTES</option><option value="3">3 DÍAS ANTES</option><option value="5">5 DÍAS ANTES</option><option value="7">7 DÍAS ANTES</option></select></label>
   </nav>
   <main class="bays" id="bays"></main>
   <footer class="legend">
@@ -261,8 +287,10 @@ select.f option{background:#aaaaaa;color:#000}
     <span><i style="background:#ece3c6"></i>P3 NORMAL</span>
     <span><i style="background:#cfe0ec"></i>P4 BAJA</span>
     <span><i style="background:var(--red)"></i>VENCIDA</span>
-    <span>· CLIC EN FICHA: EDITAR · ARRASTRAR O ▲▼: CAMBIAR DE BAHÍA · TECLAS N (NUEVA) · D (dBASE) · / (BUSCAR)</span>
+    <span><i style="background:var(--amber)"></i>APROXIMACIÓN FINAL (PARPADEA)</span>
+    <span>· CLIC EN FICHA: EDITAR · ARRASTRAR O ▲▼: CAMBIAR DE BAHÍA · ✕ O SUPR: ELIMINAR (CTRL+Z DESHACE) · TECLAS N (NUEVA) · D (dBASE) · / (BUSCAR)</span>
   </footer>
+  <div id="toast" class="toast hidden" role="status"><span id="toastTxt"></span><button type="button" id="toastUndo">↶ DESHACER</button><button type="button" id="toastX" title="Cerrar">✕</button></div>
 </div>
 
 <!-- ======================= dBASE ======================= -->
@@ -284,6 +312,12 @@ select.f option{background:#aaaaaa;color:#000}
         <div class="frow"><label class="lab" for="fEffort">Esfuerzo (h)</label><input id="fEffort" class="f" data-k="effort" style="width:6ch" inputmode="decimal" autocomplete="off"><label class="lab2" for="fProg">Avance %</label><input id="fProg" class="f" data-k="progress" style="width:4ch" inputmode="numeric" autocomplete="off"></div>
         <div class="frow"><label class="lab" for="fNotes">Notas</label><button id="fNotes" class="f memo" data-k="notes" type="button">memo</button><span class="aux">F9 o Ctrl+Inicio abre el memo</span></div>
         <pre id="fMemoPrev" class="memoprev"></pre>
+        <div class="dbtns">
+          <button class="dbtn" type="button" data-e="save">&lt; F5 Grabar &gt;</button>
+          <button class="dbtn" type="button" data-e="new">&lt; F3 Nueva ficha &gt;</button>
+          <button class="dbtn" type="button" data-e="done">&lt; Dar por hecha &gt;</button>
+          <button class="dbtn" type="button" data-e="del">&lt; F8 Eliminar ficha &gt;</button>
+        </div>
       </div>
       <div class="hints">Fechas: <b>21/11/2026</b> · <b>21/11</b> · <b>hoy</b> · <b>mañana</b> · <b>+3</b> (días) · <b>+2s</b> (semanas) · <b>viernes</b></div>
       <div class="hints" id="fMod"></div>
@@ -340,7 +374,7 @@ select.f option{background:#aaaaaa;color:#000}
     <button type="button" data-fk="F5"><b>F5</b><span>Grabar</span></button>
     <button type="button" data-fk="PgUp"><b>RePág</b><span>Ant.</span></button>
     <button type="button" data-fk="PgDn"><b>AvPág</b><span>Sig.</span></button>
-    <button type="button" data-fk="F8"><b>F8</b><span>Borrar</span></button>
+    <button type="button" data-fk="F8"><b>F8</b><span>Eliminar</span></button>
     <button type="button" data-fk="F9"><b>F9</b><span>Memo</span></button>
     <button type="button" data-fk="F10"><b>F10</b><span>Menú</span></button>
     <button type="button" data-fk="Esc"><b>Esc</b><span>Panel</span></button>
@@ -354,7 +388,7 @@ select.f option{background:#aaaaaa;color:#000}
       <button class="dbtn" type="button" data-m="save">&lt; Grabar &gt;</button><button class="dbtn" type="button" data-m="cancel">&lt; Abandonar &gt;</button></div>
   </div></div>
   <div id="dlg" class="overlay hidden"><div class="dlgbox" id="dlgBox"></div></div>
-  <div id="splash" class="overlay hidden"><div class="splashbox"><pre><span class="y">dTAREAS IV</span>  ·  versión 1.0
+  <div id="splash" class="overlay hidden"><div class="splashbox"><pre><span class="y">dTAREAS IV</span>  ·  versión <span id="splashVer"></span>
 Sistema de gestión de fichas de tareas
 <span class="c">──────────────────────────────────────</span>
 Abriendo C:\PEPE\TAREAS.DBF …
@@ -369,6 +403,7 @@ Abriendo C:\PEPE\TAREAS.DBF …
 /* =========================================================
    CONSTANTES Y UTILIDADES
    ========================================================= */
+const VERSION='1.2';
 const LS_KEY='pepe-atc-db-v1', LS_SYNC='pepe-atc-sync-v1', LS_UI='pepe-atc-ui-v1';
 const STATUS=[
   {k:'PEND',bay:'EN PLATAFORMA',sub:'pendientes'},
@@ -520,7 +555,7 @@ function applyMerged(m){
 /* =========================================================
    PREFERENCIAS DE INTERFAZ
    ========================================================= */
-function loadUI(){let u={};try{u=JSON.parse(localStorage.getItem(LS_UI))||{}}catch(e){}return{hidden:Array.isArray(u.hidden)?u.hidden:[],showDone:u.showDone!==false,order:u.order||'n',filter:u.filter||'all',lastArea:u.lastArea||''}}
+function loadUI(){let u={};try{u=JSON.parse(localStorage.getItem(LS_UI))||{}}catch(e){}return{hidden:Array.isArray(u.hidden)?u.hidden:[],showDone:u.showDone!==false,order:u.order||'n',filter:u.filter||'all',lastArea:u.lastArea||'',approach:[0,1,2,3,5,7].includes(u.approach)?u.approach:2}}
 const UI=loadUI();
 let Q='';
 function saveUI(){try{localStorage.setItem(LS_UI,JSON.stringify(UI))}catch(e){}}
@@ -528,21 +563,33 @@ function saveUI(){try{localStorage.setItem(LS_UI,JSON.stringify(UI))}catch(e){}}
 /* =========================================================
    PANEL DE FICHAS (salida)
    ========================================================= */
+/* Fase de vuelo según el plazo: 'over' (vencida), 'final' (aproximación final) o null */
+function phase(t){
+  if(!t.due||t.status==='HECH'||t.deleted)return null;
+  const d=daysUntil(t.due);
+  if(d<0)return 'over';
+  if(d===0&&t.time){const n=new Date();if(pad(n.getHours())+':'+pad(n.getMinutes())>t.time)return 'over'}
+  if(d<=UI.approach)return 'final';
+  return null;
+}
 function renderFilters(){
   $('#chips').innerHTML=`<button type="button" class="chip all" data-a="*">TODAS</button>`+
     DB.areas.map(a=>`<button type="button" class="chip ${UI.hidden.includes(a.code)?'off':''}" data-a="${esc(a.code)}" style="--ac:${col(a.color)}" title="${esc(a.name)}">${esc(a.code)}</button>`).join('');
   $('#showDone').checked=UI.showDone;
+  $('#appDays').value=String(UI.approach);
 }
 function stripHTML(t){
   const a=areaOf(t.area), done=t.status==='HECH', d=t.due?daysUntil(t.due):null;
-  let cls='strip p'+t.pri; if(done)cls+=' done'; else if(d!==null&&d<0)cls+=' over';
+  const ph=phase(t);
+  let cls='strip p'+t.pri; if(done)cls+=' done'; else if(ph)cls+=' '+ph;
   let eta='——', dow='ETA', tag='<span class="sm">SIN LÍMITE</span>';
   if(t.due){
     const [y,m,dd]=t.due.split('-');
-    dow='ETA '+DOW[new Date(+y,+m-1,+dd).getDay()];
+    dow=(t.time?t.time+' ':'ETA ')+DOW[new Date(+y,+m-1,+dd).getDay()];
     eta=`${dd}/${m}`;
     if(done)tag=`<span class="sm">${t.time||'&nbsp;'}</span>`;
-    else if(d<0)tag=`<span class="tag t-over">VENC +${-d}d</span>`;
+    else if(ph==='over')tag=d<0?`<span class="tag t-over">VENC +${-d}d</span>`:`<span class="tag t-over">VENC ${t.time}</span>`;
+    else if(ph==='final')tag=`<span class="tag t-final">FINAL·${d===0?'HOY':d+'d'}</span>`;
     else if(d===0)tag=`<span class="tag t-today">HOY ${t.time||''}</span>`;
     else if(d===1)tag=`<span class="tag t-today">MAÑANA</span>`;
     else tag=`<span class="tag">T-${d}d</span>`;
@@ -557,16 +604,17 @@ function stripHTML(t){
 <div class="c2"><div class="lbl">${dow}</div><div class="big">${eta}</div>${tag}</div>
 <div class="c3"><div class="route">${esc(t.title)}</div>${note?`<div class="hand">${esc(note)}</div>`:''}</div>
 <div class="c4"><div class="lbl">FL</div><div class="big">${fl}</div><div class="bar"><i style="width:${t.progress||0}%"></i></div><div class="lbl">${t.progress||0}%</div></div>
-<div class="ctl"><button type="button" data-mv="1" title="Avanzar a la bahía siguiente" ${si===3?'disabled':''}>▼</button><button type="button" data-mv="-1" title="Volver a la bahía anterior" ${si===0?'disabled':''}>▲</button></div>
+<div class="ctl"><button type="button" data-mv="1" title="Avanzar a la bahía siguiente" ${si===3?'disabled':''}>▼</button><button type="button" data-mv="-1" title="Volver a la bahía anterior" ${si===0?'disabled':''}>▲</button><button type="button" class="del" data-del="1" title="Eliminar ficha (Supr)">✕</button></div>
 </div>`;
 }
 function renderBoard(){
   const live=DB.tasks.filter(t=>!t.deleted);
   const active=live.filter(t=>t.status!=='HECH');
-  const overdue=active.filter(t=>t.due&&daysUntil(t.due)<0).length;
+  const overdue=active.filter(t=>phase(t)==='over').length;
+  const fin=active.filter(t=>phase(t)==='final').length;
   const today=active.filter(t=>t.due&&daysUntil(t.due)===0).length;
   const urg=active.filter(t=>t.pri===1).length;
-  $('#counters').innerHTML=`<span class="cnt">TRÁFICO<b>${active.length}</b></span><span class="cnt ${urg?'alert':''}">URG<b>${urg}</b></span><span class="cnt ${overdue?'alert':''}">VENCIDAS<b>${overdue}</b></span><span class="cnt ${today?'warn':''}">HOY<b>${today}</b></span>`;
+  $('#counters').innerHTML=`<span class="cnt">TRÁFICO<b>${active.length}</b></span><span class="cnt ${urg?'alert':''}">URG<b>${urg}</b></span><span class="cnt ${overdue?'alert':''}">VENCIDAS<b>${overdue}</b></span><span class="cnt ${fin?'final':''}" title="Fichas en aproximación final">APROX<b>${fin}</b></span><span class="cnt ${today?'warn':''}">HOY<b>${today}</b></span>`;
   const q=Q.trim().toLowerCase();
   const vis=t=>!UI.hidden.includes(t.area)&&(!q||(codeOf(t)+' '+t.title+' '+t.who+' '+t.notes).toLowerCase().includes(q));
   const cutoff=now()-14*864e5;
@@ -574,7 +622,7 @@ function renderBoard(){
     let list=live.filter(t=>t.status===s.k&&vis(t));
     if(s.k==='HECH')list=list.filter(t=>(t.doneAt||t.updatedAt)>=cutoff).sort((a,b)=>(b.doneAt||b.updatedAt)-(a.doneAt||a.updatedAt)).slice(0,40);
     else list.sort(taskSort);
-    return `<section class="bay" data-s="${s.k}"><h2>${s.bay}<small>${s.sub}</small><span class="n">${list.length}</span></h2><div class="rack" data-s="${s.k}">${list.map(stripHTML).join('')||'<div class="empty">— SIN TRÁFICO —</div>'}</div></section>`;
+    return `<section class="bay" data-s="${s.k}"><h2>${s.bay}<small>${s.sub}</small><span class="n">${list.length}</span>${s.k==='HECH'&&list.length?'<button type="button" class="baybtn" data-clear="HECH" title="Eliminar todas las fichas aterrizadas visibles">VACIAR</button>':''}</h2><div class="rack" data-s="${s.k}">${list.map(stripHTML).join('')||'<div class="empty">— SIN TRÁFICO —</div>'}</div></section>`;
   }).join('');
 }
 function setStatus(t,k){
@@ -584,14 +632,52 @@ function setStatus(t,k){
   else{t.doneAt=0;if(was==='HECH'&&t.progress===100)t.progress=90}
   t.updatedAt=now();
 }
+/* ---------- Eliminar / deshacer (compartido por panel y dBASE) ---------- */
+const UNDO=[];
+function deleteTasks(list){
+  if(!list.length)return;
+  const at=now(),ids=new Set(list.map(t=>t.id));
+  UNDO.push(list.map(t=>({...t})));if(UNDO.length>30)UNDO.shift();
+  list.forEach(t=>DB.tombstones.push({id:t.id,at}));
+  DB.tasks=DB.tasks.filter(t=>!ids.has(t.id));
+  if(DBS.cur&&ids.has(DBS.cur))DBS.cur=null;
+  persist();
+}
+function undoDelete(){
+  const g=UNDO.pop();if(!g)return null;
+  const t0=now(),ids=new Set(g.map(t=>t.id));
+  DB.tombstones=DB.tombstones.filter(x=>!ids.has(x.id));
+  g.forEach(t=>{if(!byId(t.id))DB.tasks.push(normTask({...t,deleted:false,updatedAt:t0}))});
+  DB.tasks.sort((a,b)=>a.n-b.n);
+  persist();return g;
+}
+let toastTimer=null;
+function toast(text,undo){$('#toastTxt').textContent=text;$('#toastUndo').classList.toggle('hidden',!undo);$('#toast').classList.remove('hidden');clearTimeout(toastTimer);toastTimer=setTimeout(hideToast,undo?10000:4000)}
+function hideToast(){$('#toast').classList.add('hidden')}
+function boardUndo(){const g=undoDelete();if(!g){toast('No hay eliminaciones que deshacer',false);return}toast(g.length===1?`Ficha ${codeOf(g[0])} recuperada`:`${g.length} fichas recuperadas`,false);setTimeout(()=>focusStrip(g[0].id,true),30)}
+function boardDelete(t){
+  const all=$$('.strip'),idx=all.findIndex(s=>s.dataset.id===t.id),hadFocus=document.activeElement&&document.activeElement.dataset&&document.activeElement.dataset.id===t.id;
+  deleteTasks([t]);
+  toast(`Ficha ${codeOf(t)} eliminada`,true);
+  if(hadFocus){const rest=$$('.strip');const nx=rest[idx]||rest[idx-1];if(nx)nx.focus({preventScroll:true})}
+}
 function moveTask(t,dir){const i=Math.max(0,Math.min(3,SKEYS.indexOf(t.status)+dir));setStatus(t,SKEYS[i]);persist()}
 function focusStrip(id,flash){const s=document.querySelector(`.strip[data-id="${CSS.escape(id)}"]`);if(s){s.focus({preventScroll:false});if(flash){s.classList.remove('flash');void s.offsetWidth;s.classList.add('flash')}}}
 
 (function wireBoard(){
   const bays=$('#bays');
   bays.addEventListener('click',e=>{
+    const clr=e.target.closest('[data-clear]');
+    if(clr){
+      const q=Q.trim().toLowerCase();
+      const list=DB.tasks.filter(t=>!t.deleted&&t.status==='HECH'&&!UI.hidden.includes(t.area)&&(!q||(codeOf(t)+' '+t.title+' '+t.who+' '+t.notes).toLowerCase().includes(q)));
+      if(!list.length)return;
+      if(!confirm(`¿Eliminar las ${list.length} fichas aterrizadas (hechas)?\nPodrá deshacerlo justo después.`))return;
+      deleteTasks(list);toast(`${list.length} fichas aterrizadas eliminadas`,true);return;
+    }
     const s=e.target.closest('.strip');if(!s)return;
     const t=byId(s.dataset.id);if(!t)return;
+    if(e.target.closest('button[data-del]')){e.stopPropagation();boardDelete(t);return}
     const b=e.target.closest('button[data-mv]');
     if(b){e.stopPropagation();moveTask(t,+b.dataset.mv);focusStrip(t.id,true);return}
     openDb('edit',t.id);
@@ -609,17 +695,23 @@ function focusStrip(id,flash){const s=document.querySelector(`.strip[data-id="${
   });
   $('#q').addEventListener('input',e=>{Q=e.target.value;renderBoard()});
   $('#showDone').addEventListener('change',e=>{UI.showDone=e.target.checked;saveUI();renderBoard()});
+  $('#appDays').addEventListener('change',e=>{UI.approach=+e.target.value;saveUI();renderBoard()});
   $('#btnDb').onclick=()=>openDb();
   $('#btnNew').onclick=()=>openDb('new');
   $('#syncInd').onclick=()=>openDb('sync');
+  $('#toastUndo').onclick=boardUndo;
+  $('#toastX').onclick=hideToast;
 })();
 function boardKey(e){
-  if(e.ctrlKey||e.metaKey||e.altKey)return;
   const tg=e.target;
+  const inField=tg.matches&&tg.matches('input,textarea,select');
+  if((e.ctrlKey||e.metaKey)&&!e.altKey&&(e.key==='z'||e.key==='Z')&&!inField){e.preventDefault();boardUndo();return}
+  if(e.ctrlKey||e.metaKey||e.altKey)return;
   if(tg.matches&&tg.matches('input,textarea,select')){if(e.key==='Escape')tg.blur();return}
   if(tg.classList&&tg.classList.contains('strip')){
     const t=byId(tg.dataset.id);
     if(e.key==='Enter'){e.preventDefault();openDb('edit',t.id);return}
+    if(e.key==='Delete'||e.key==='Backspace'){e.preventDefault();boardDelete(t);return}
     if(e.shiftKey&&(e.key==='ArrowDown'||e.key==='ArrowUp'||e.key==='ArrowRight'||e.key==='ArrowLeft')){e.preventDefault();moveTask(t,(e.key==='ArrowDown'||e.key==='ArrowRight')?1:-1);focusStrip(t.id,true);return}
   }
   const k=e.key.toLowerCase();
@@ -633,18 +725,19 @@ function tickClock(){
   $('#clkZ').textContent=`${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}Z`;
   const dc=$('#dClock');if(dc)dc.textContent=`${pad(d.getHours())}:${pad(d.getMinutes())}`;
   const day=todayISO();if(day!==tickClock.day){if(tickClock.day)renderBoard();tickClock.day=day}
+  if(d.getSeconds()===0){const sig=DB.tasks.map(phase).join();if(sig!==tickClock.sig){if(tickClock.sig!==undefined&&!$('#board').classList.contains('hidden')&&!document.querySelector('.strip.dragging'))renderBoard();tickClock.sig=sig}}
 }
 
 /* =========================================================
    dBASE (entrada de datos)
    ========================================================= */
-const DBS={mode:'edit',prevMode:'edit',cur:null,draft:null,dirty:false,ins:true,menu:null,modal:null,dlg:null,booted:false,splash:false,dotHist:[],dotPos:0,lastSearch:'',areasDraft:[],areasDirty:false,areaSel:0,memoOrig:''};
+const DBS={mode:'edit',prevMode:'edit',cur:null,draft:null,dirty:false,ins:true,menu:null,modal:null,dlg:null,booted:false,splash:false,dotHist:[],dotPos:0,lastSearch:'',areasDraft:[],areasDirty:false,areaSel:0,memoOrig:'',sel:new Set()};
 const F={area:$('#fArea'),title:$('#fTitle'),pri:$('#fPri'),status:$('#fStatus'),start:$('#fStart'),due:$('#fDue'),time:$('#fTime'),who:$('#fWho'),effort:$('#fEffort'),progress:$('#fProg'),notes:$('#fNotes')};
 const FIELD_ORDER=[F.area,F.title,F.pri,F.status,F.start,F.due,F.time,F.who,F.effort,F.progress,F.notes];
 const finePointer=matchMedia('(hover:hover) and (pointer:fine)').matches;
 const MODE_HINT={
-  edit:'RePág/AvPág: registro · F2: tabla · F3: nuevo · F5: grabar · F9: notas · F10: menú · Esc: panel',
-  browse:'↑↓: mover · Intro: editar · F3: nuevo · F8: marcar borrado · F10: menú · Esc: panel',
+  edit:'RePág/AvPág: registro · F2: tabla · F3: nuevo · F5: grabar · F8: eliminar · F9: notas · F10: menú · Esc: panel',
+  browse:'↑↓: mover · Intro: editar · Espacio: marcar · Supr/F8: eliminar · Ctrl+Z: deshacer · Esc: panel',
   dot:'Escriba una orden y pulse Intro (HELP: lista de órdenes) · Esc: volver',
   areas:'F3: añadir área · F8: eliminar · F5: grabar · Esc: volver',
   sync:'Rellene los datos del repositorio privado y pulse F5 para guardar · Esc: volver'};
@@ -697,6 +790,7 @@ $('#splash').addEventListener('pointerdown',e=>{e.preventDefault();hideSplash()}
 /* ---------- Modos ---------- */
 function showMode(m){
   if(DBS.mode==='edit'||DBS.mode==='browse')DBS.prevMode=DBS.mode;
+  if(m!=='browse')DBS.sel.clear();
   DBS.mode=m;
   ['Edit','Browse','Dot','Areas','Sync'].forEach(n=>$('#v'+n).classList.toggle('hidden',n.toLowerCase()!==m));
   if(m==='edit'){loadForm();if(finePointer)setTimeout(()=>focusField(1),0)}
@@ -716,7 +810,7 @@ function updateStatus(){
   $('#sbRec').textContent=rs;
   $('#sbFile').textContent=DBS.dirty?'Modificado':'Archivo';
   const t=DBS.cur&&DBS.cur!=='NEW'?byId(DBS.cur):null;
-  $('#sbDel').textContent=t&&t.deleted?'Bor':'';
+  $('#sbDel').textContent=DBS.mode==='browse'&&DBS.sel.size?`Marc ${DBS.sel.size}`:(t&&t.deleted?'Bor':'');
   $('#sbOrd').textContent=({n:'Natural',pri:'Prioridad',due:'F.límite',area:'Área'}[UI.order]||'')+(UI.filter==='active'?' · Activas':'');
   $('#sbIns').textContent=DBS.ins?'Ins':'Sobr';
 }
@@ -844,15 +938,45 @@ async function cmdDup(){
   if(DBS.mode!=='edit')showMode('edit');else loadForm();
   DBS.dirty=true;updateStatus();msg('Copia preparada · F5 para grabarla');
 }
-function cmdToggleDel(){
+async function cmdDelete(){
+  if(DBS.mode==='areas')return delAreaRow();
   if(DBS.mode!=='edit'&&DBS.mode!=='browse')return;
   if(DBS.cur==='NEW'){DBS.cur=null;DBS.draft=null;DBS.dirty=false;loadForm();msg('Alta descartada');return}
-  const t=byId(DBS.cur);if(!t)return;
-  t.deleted=!t.deleted;t.updatedAt=now();persist();
-  msg(t.deleted?'Registro marcado para borrar · Registros › Empaquetar para eliminarlo':'Registro recuperado');
-  if(DBS.mode==='edit')$('#vEdit').classList.toggle('isdel',t.deleted);else renderBrowse();
-  updateStatus();
+  let list;
+  if(DBS.mode==='browse'&&DBS.sel.size)list=DB.tasks.filter(t=>DBS.sel.has(t.id));
+  else{const t=byId(DBS.cur);if(!t)return msg('No hay registro que eliminar');list=[t]}
+  if(!list.length)return;
+  const q=list.length===1?`¿Eliminar la ficha ${codeOf(list[0])}?\n«${list[0].title.slice(0,60)}» (S/N)`:`¿Eliminar las ${list.length} fichas marcadas? (S/N)`;
+  if(!(await ask(q)))return;
+  const l=recList(),i=Math.max(0,l.findIndex(t=>t.id===DBS.cur));
+  deleteTasks(list);DBS.sel.clear();DBS.dirty=false;
+  const l2=recList();DBS.cur=l2.length?l2[Math.min(i,l2.length-1)].id:null;
+  if(DBS.mode==='edit')loadForm();else renderBrowse();
+  msgUndo(list.length===1?`Ficha ${codeOf(list[0])} eliminada`:`${list.length} fichas eliminadas`);
 }
+function cmdUndo(){
+  if(DBS.mode==='edit'&&!leaveRecord())return;
+  const g=undoDelete();
+  if(!g){msg('No hay eliminaciones que deshacer');return 0}
+  DBS.cur=g[0].id;
+  if(DBS.mode==='edit')loadForm();else if(DBS.mode==='browse')renderBrowse();
+  updateStatus();msg(g.length===1?`Ficha ${codeOf(g[0])} recuperada`:`${g.length} fichas recuperadas`,'ok');
+  return g.length;
+}
+async function cmdDeleteDone(){
+  const list=DB.tasks.filter(t=>t.status==='HECH');
+  if(!list.length)return msg('No hay fichas aterrizadas (hechas)');
+  if(!(await ask(`¿Eliminar las ${list.length} fichas aterrizadas (hechas)? (S/N)`)))return;
+  if(DBS.mode==='edit'&&DBS.cur!=='NEW'&&list.some(t=>t.id===DBS.cur))DBS.dirty=false;
+  deleteTasks(list);refreshView();msgUndo(`${list.length} fichas aterrizadas eliminadas`);
+}
+function msgUndo(text){
+  const m=$('#msg');m.className='msgline ok';
+  m.innerHTML=esc(text)+'<button type="button" class="undo">‹ Deshacer ›</button>';
+  clearTimeout(msgTimer);msgTimer=setTimeout(defaultMsg,10000);
+}
+$('#msg').addEventListener('click',e=>{if(e.target.closest('.undo'))cmdUndo()});
+$('#vEdit').addEventListener('click',e=>{const b=e.target.closest('[data-e]');if(!b)return;({save:()=>saveRecord(true),new:cmdNew,done:cmdDone,del:cmdDelete})[b.dataset.e]()});
 function cmdDone(){
   if(DBS.mode==='edit'){if(DBS.cur==='NEW'&&!F.title.value.trim())return;F.status.value='HECH';F.progress.value='100';DBS.dirty=true;saveRecord(true);return}
   if(DBS.mode==='browse'){const t=byId(DBS.cur);if(!t)return;setStatus(t,'HECH');persist();renderBrowse();msg(codeOf(t)+' aterrizada','ok')}
@@ -861,20 +985,14 @@ async function cmdPack(){
   const del=DB.tasks.filter(t=>t.deleted);
   if(!del.length){msg('No hay registros marcados para borrar');return 0}
   if(!(await ask(`¿Eliminar definitivamente ${del.length} registro(s) marcado(s)? (S/N)`)))return 0;
-  const at=now();del.forEach(t=>DB.tombstones.push({id:t.id,at}));
-  DB.tasks=DB.tasks.filter(t=>!t.deleted);
-  if(DBS.cur&&DBS.cur!=='NEW'&&!byId(DBS.cur))DBS.cur=null;
-  persist();refreshView();msg(`${del.length} registro(s) eliminado(s) · fichero empaquetado`,'ok');
+  deleteTasks(del);refreshView();msgUndo(`${del.length} registro(s) eliminado(s) · fichero empaquetado`);
   return del.length;
 }
 async function removeDemo(){
   const d=DB.tasks.filter(t=>t.demo);
   if(!d.length)return msg('No quedan fichas de ejemplo');
   if(!(await ask(`¿Eliminar las ${d.length} fichas de ejemplo? (S/N)`)))return;
-  const at=now();d.forEach(t=>DB.tombstones.push({id:t.id,at}));
-  DB.tasks=DB.tasks.filter(t=>!t.demo);
-  if(DBS.cur&&DBS.cur!=='NEW'&&!byId(DBS.cur))DBS.cur=null;
-  persist();refreshView();msg('Fichas de ejemplo eliminadas','ok');
+  deleteTasks(d);refreshView();msgUndo('Fichas de ejemplo eliminadas');
 }
 function refreshView(){if(DBS.mode==='edit'){if(!DBS.dirty)loadForm()}else if(DBS.mode==='browse')renderBrowse();updateStatus()}
 function setOrder(o){if(DBS.mode==='edit'&&!leaveRecord())return;UI.order=o;saveUI();refreshView();msg('Orden activo: '+({n:'natural (nº de registro)',pri:'prioridad',due:'fecha límite',area:'área'}[o]))}
@@ -976,7 +1094,7 @@ function showHelp(){
   dialog({kind:'alert',cls:'help',title:'AYUDA · dTAREAS IV',html:`<pre>
 F1  Ayuda                  F2  Edición ⇄ Tabla
 F3  Registro nuevo         F4  Buscar texto (repetir: F4)
-F5  Grabar registro        F8  Marcar / recuperar borrado
+F5  Grabar registro        F8  Eliminar ficha
 F9  Abrir memo de notas    F10 Menú (o Alt+letra)
 RePág / AvPág   Registro anterior / siguiente
 ↑ ↓  Intro      Moverse entre campos
@@ -985,11 +1103,22 @@ Ins             Insertar / Sobrescribir
 Ctrl+Fin        Grabar y volver al panel
 Esc             Abandonar y volver al panel
 
+ELIMINAR FICHAS
+  Edición: F8 o botón «Eliminar ficha»
+  Tabla:   Espacio marca varias · Ctrl+A todas · Supr o F8 elimina
+  Panel:   botón ✕ de la ficha o tecla Supr
+  Deshacer: Ctrl+Z (tabla y panel) o Registros › Deshacer
+
 FECHAS:  21/11/2026 · 21/11 · hoy · mañana · +3 · +2s · viernes
 
 INDICADOR DE PUNTO (Utilidades › Indicador de punto)
   ALTA INSP P1 @viernes Informe de supervisión
-  LIST · LIST ACAD · EDIT 12 · HECHA 12 · HELP
+  LIST · EDIT 12 · HECHA 12 · BORRAR 12 · DESHACER
+
+AVISOS DE PLAZO
+  Fecha parpadeando: aproximación final (plazo cercano)
+  Fecha en rojo: vencida
+  El margen se elige en el panel: «APROX. FINAL»
 
 ESTADOS (bahías del panel)
   PEND En plataforma · CURS En vuelo
@@ -998,12 +1127,12 @@ ESTADOS (bahías del panel)
 
 /* ---------- Menús ---------- */
 const MENUS=[
-  {t:'Registros',items:[['Añadir registro','F3',cmdNew],['Duplicar registro','',cmdDup],['Marcar como HECHA (aterrizada)','',cmdDone],['Marcar/recuperar borrado','F8',cmdToggleDel],'-',['Empaquetar (eliminar marcados)','',cmdPack],['Eliminar fichas de ejemplo','',removeDemo]]},
+  {t:'Registros',items:[['Añadir registro','F3',cmdNew],['Duplicar registro','',cmdDup],['Marcar como HECHA (aterrizada)','',cmdDone],'-',['Eliminar ficha (o las marcadas)','F8',cmdDelete],['Deshacer última eliminación','Ctrl+Z',cmdUndo],['Eliminar todas las aterrizadas','',cmdDeleteDone],['Eliminar fichas de ejemplo','',removeDemo],['Empaquetar (registros con *)','',cmdPack]]},
   {t:'Organizar',items:[['Orden natural (nº registro)','',()=>setOrder('n')],['Ordenar por prioridad','',()=>setOrder('pri')],['Ordenar por fecha límite','',()=>setOrder('due')],['Ordenar por área','',()=>setOrder('area')],'-',['Mostrar todas las fichas','',()=>setFilter('all')],['Mostrar sólo fichas activas','',()=>setFilter('active')]]},
   {t:'Ir a',items:[['Primer registro','',()=>goEdge(false)],['Último registro','',()=>goEdge(true)],['Registro nº…','',goN],['Buscar texto…','F4',cmdSearch],'-',['Vista de edición','',()=>{if(DBS.mode!=='edit')showMode('edit')}],['Vista de tabla','F2',()=>{if(DBS.mode==='edit'&&!leaveRecord())return;showMode('browse')}]]},
   {t:'Utilidades',items:[['Indicador de punto (órdenes)','',()=>{if(DBS.mode==='edit'&&!leaveRecord())return;showMode('dot')}],['Configurar áreas','',()=>{if(DBS.mode==='edit'&&!leaveRecord())return;showMode('areas')}],['Sincronización (GitHub)…','',()=>{if(DBS.mode==='edit'&&!leaveRecord())return;showMode('sync')}],['Sincronizar ahora','',()=>syncNow(true)],'-',['Exportar copia de seguridad (JSON)','',exportJSON],['Importar copia de seguridad (JSON)','',importJSON],['Exportar a Excel (CSV)','',exportCSV]]},
   {t:'Salir',items:[['Grabar y volver al panel','Ctrl+Fin',saveAndExit],['Abandonar cambios y volver','Esc',()=>{DBS.dirty=false;closeDb()}],'-',['Ayuda','F1',showHelp]]}];
-function renderMenubar(){$('#menubar').innerHTML=MENUS.map((m,i)=>`<button type="button" class="mi" data-i="${i}"><u>${m.t[0]}</u>${esc(m.t.slice(1))}</button>`).join('')+`<span class="mtitle">dTAREAS IV</span><span class="mclock" id="dClock"></span>`}
+function renderMenubar(){$('#menubar').innerHTML=MENUS.map((m,i)=>`<button type="button" class="mi" data-i="${i}"><u>${m.t[0]}</u>${esc(m.t.slice(1))}</button>`).join('')+`<span class="mtitle">dTAREAS IV · v${VERSION}</span><span class="mclock" id="dClock"></span>`}
 function firstSel(i){return MENUS[i].items.findIndex(x=>x!=='-')}
 function openMenu(i){if(DBS.modal)return;DBS.menu={i,j:firstSel(i)};renderDdm()}
 function renderDdm(){
@@ -1037,8 +1166,8 @@ function renderBrowse(){
   let idx=l.findIndex(t=>t.id===DBS.cur);
   if(idx<0)idx=0;
   if(l[idx])DBS.cur=l[idx].id;
-  const rows=l.map((t,x)=>`<tr class="${x===idx?'sel':''} ${t.deleted?'del':''} ${t.status==='HECH'?'dn':''}" data-x="${x}"><td class="r">${t.n}</td><td>${t.deleted?'*':'&nbsp;'}</td><td>${esc(codeOf(t))}</td><td class="tt">${esc(t.title)}</td><td>${t.pri}</td><td>${t.status}</td><td>${fmtDate(t.due)||'  /  /    '}</td><td class="r">${t.progress}</td><td>${esc(t.who)}</td></tr>`).join('');
-  $('#brwWrap').innerHTML=`<table class="brw"><thead><tr><th>REG</th><th>B</th><th>CÓDIGO</th><th>TAREA</th><th>P</th><th>ESTADO</th><th>LÍMITE</th><th>AV%</th><th>PERSONA</th></tr></thead><tbody>${rows||'<tr><td colspan="9">** Fichero vacío · F3 para añadir un registro **</td></tr>'}</tbody></table>`;
+  const rows=l.map((t,x)=>`<tr class="${x===idx?'sel':''} ${DBS.sel.has(t.id)?'mk':''} ${t.deleted?'del':''} ${t.status==='HECH'?'dn':''}" data-x="${x}"><td class="r">${t.n}</td><td class="bm" title="Marcar">${DBS.sel.has(t.id)?'■':t.deleted?'*':'·'}</td><td>${esc(codeOf(t))}</td><td class="tt">${esc(t.title)}</td><td>${t.pri}</td><td>${t.status}</td><td class="${({final:'blink',over:'lateD'})[phase(t)]||''}">${fmtDate(t.due)||'  /  /    '}</td><td class="r">${t.progress}</td><td>${esc(t.who)}</td></tr>`).join('');
+  $('#brwWrap').innerHTML=`<table class="brw"><thead><tr><th>REG</th><th>M</th><th>CÓDIGO</th><th>TAREA</th><th>P</th><th>ESTADO</th><th>LÍMITE</th><th>AV%</th><th>PERSONA</th></tr></thead><tbody>${rows||'<tr><td colspan="9">** Fichero vacío · F3 para añadir un registro **</td></tr>'}</tbody></table>`;
   const sel=$('#brwWrap tr.sel');if(sel)sel.scrollIntoView({block:'nearest'});
   updateStatus();
 }
@@ -1058,10 +1187,22 @@ function browseKey(e){
   else if(k==='Home'){e.preventDefault();browseMove(0,0)}
   else if(k==='End'){e.preventDefault();browseMove(0,recList().length-1)}
   else if(k==='Enter'){e.preventDefault();if(recList().length)showMode('edit')}
+  else if(k===' '){e.preventDefault();toggleMark(DBS.cur,true)}
+  else if(k==='Delete'||k==='Backspace'){e.preventDefault();cmdDelete()}
+  else if((e.ctrlKey||e.metaKey)&&(k==='z'||k==='Z')){e.preventDefault();cmdUndo()}
+  else if((e.ctrlKey||e.metaKey)&&(k==='a'||k==='A')){e.preventDefault();const l=recList();if(DBS.sel.size===l.length)DBS.sel.clear();else l.forEach(t=>DBS.sel.add(t.id));renderBrowse()}
+}
+function toggleMark(id,advance){
+  if(!id||id==='NEW')return;
+  if(DBS.sel.has(id))DBS.sel.delete(id);else DBS.sel.add(id);
+  if(advance){const l=recList(),i=l.findIndex(t=>t.id===id);if(i>=0&&i<l.length-1)DBS.cur=l[i+1].id}
+  renderBrowse();
+  msg(DBS.sel.size?`${DBS.sel.size} ficha(s) marcada(s) · Supr o F8 para eliminarlas · Ctrl+A marca todas`:'Sin fichas marcadas');
 }
 $('#brwWrap').addEventListener('click',e=>{
   const tr=e.target.closest('tbody tr[data-x]');if(!tr)return;
   const l=recList(),t=l[+tr.dataset.x];if(!t)return;
+  if(e.target.closest('td.bm')){DBS.cur=t.id;toggleMark(t.id,false);return}
   if(t.id===DBS.cur)showMode('edit');else{DBS.cur=t.id;renderBrowse()}
 });
 
@@ -1078,8 +1219,8 @@ function dotHelp(){[
   '  EDIT n              Editar el registro n (o INSP042)',
   '  HECHA n             Aterrizar (dar por hecha) la ficha n',
   '  ESTADO n PEND|CURS|ESPE|HECH   Cambiar de bahía',
-  '  DELETE n / RECALL n Marcar / recuperar borrado',
-  '  PACK                Eliminar definitivamente los marcados',
+  '  BORRAR n            Eliminar la ficha n (BORRAR HECHAS: todas las hechas)',
+  '  DESHACER            Recuperar la última eliminación',
   '  BROWSE              Vista de tabla',
   '  SYNC                Sincronizar con GitHub',
   '  ? DATE()  ? TIME()  ? RECCOUNT()',
@@ -1141,7 +1282,13 @@ async function runDot(line){
       if(!t){out('*** Registro no encontrado ***','err');return}
       DBS.cur=t.id;updateStatus();return out('Registro actual: '+listLine(t));
     }
-    case 'DELETE':case 'BORRAR':if(!(t=one()))return;t.deleted=true;t.updatedAt=now();persist();return out('1 registro marcado para borrar: '+codeOf(t),'ok');
+    case 'DELETE':case 'BORRAR':case 'ELIMINAR':{
+      if(/^(HECHAS|ATERRIZADAS)$/i.test(arg)){const l=DB.tasks.filter(x=>x.status==='HECH');if(!l.length)return out('No hay fichas aterrizadas');if(!(await ask(`¿Eliminar las ${l.length} fichas aterrizadas? (S/N)`)))return out('Cancelado');deleteTasks(l);$('#dotIn').focus();return out(l.length+' fichas eliminadas · DESHACER para recuperarlas','ok')}
+      if(!(t=one()))return;
+      if(!(await ask(`¿Eliminar la ficha ${codeOf(t)}? (S/N)`))){$('#dotIn').focus();return out('Cancelado')}
+      deleteTasks([t]);$('#dotIn').focus();return out('Ficha '+codeOf(t)+' eliminada · DESHACER para recuperarla','ok');
+    }
+    case 'UNDO':case 'DESHACER':{const n=cmdUndo();return out(n?n+' ficha(s) recuperada(s)':'No hay eliminaciones que deshacer',n?'ok':'err')}
     case 'RECALL':case 'RECUPERAR':if(!(t=one()))return;t.deleted=false;t.updatedAt=now();persist();return out('1 registro recuperado: '+codeOf(t),'ok');
     case 'PACK':case 'EMPAQUETAR':{const n=await cmdPack();return out(n+' registro(s) eliminado(s)','ok')}
     case 'HECHA':case 'DONE':case 'ATERRIZA':if(!(t=one()))return;setStatus(t,'HECH');persist();return out(codeOf(t)+' aterrizada ✓','ok');
@@ -1327,7 +1474,7 @@ function fkey(k){
     case 'F3':return cmdNew();
     case 'F4':return cmdSearch();
     case 'F5':if(DBS.mode==='edit')return saveRecord(true);if(DBS.mode==='areas')return saveAreas();if(DBS.mode==='sync')return saveSyncCfg(true);return;
-    case 'F8':if(DBS.mode==='areas')return delAreaRow();return cmdToggleDel();
+    case 'F8':return cmdDelete();
     case 'F9':if(DBS.mode==='edit')return openMemo();return;
     case 'F10':return openMenu(0);
     case 'PgUp':return goRel(-1);
@@ -1370,6 +1517,7 @@ document.addEventListener('keydown',e=>{
 /* =========================================================
    ARRANQUE
    ========================================================= */
+$('#splashVer').textContent=VERSION;
 renderMenubar();renderFilters();renderBoard();tickClock();setInterval(tickClock,1000);
 setSync(syncReady()?'idle':'off');
 if(syncReady()&&syncCfg().auto!==false)syncNow();
