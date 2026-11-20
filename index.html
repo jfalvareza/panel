@@ -129,6 +129,14 @@ button{font-family:inherit}
 @keyframes approach{0%,100%{box-shadow:0 0 0 2px rgba(255,176,0,.95),0 0 14px rgba(255,176,0,.55),0 2px 3px rgba(0,0,0,.6)}50%{box-shadow:0 0 0 2px rgba(255,176,0,.15),0 2px 3px rgba(0,0,0,.6)}}
 @keyframes holderBlink{50%{filter:brightness(1.7) saturate(.4)}}
 @keyframes cntBlink{50%{border-color:#39424a}}
+.strip.stale{animation:staleGlow 1.3s ease-in-out infinite}
+.tko{display:block;width:100%;margin-top:2px;border:1.5px solid #1d5f86;background:#dff2ff;color:#0e3d5a;font-family:var(--mono);font-size:8.5px;font-weight:700;letter-spacing:0;padding:2px 0;cursor:pointer;border-radius:2px;white-space:nowrap}
+.tko:hover{background:#1d5f86;color:#fff}
+.strip.stale .tko{background:#0e6f9e;color:#fff;border-color:#0e6f9e;animation:blink 1.3s steps(2) infinite}
+.tag.t-stale{color:#fff;background:#0e6f9e;border-color:#0e6f9e}
+.cnt.stale{border-color:#55e6ff;color:#bdf3ff;animation:cntBlink 1.3s steps(2) infinite}.cnt.stale b{color:#55e6ff}
+@keyframes staleGlow{0%,100%{box-shadow:0 0 0 2px rgba(85,230,255,.95),0 0 14px rgba(85,230,255,.5),0 2px 3px rgba(0,0,0,.6)}50%{box-shadow:0 0 0 2px rgba(85,230,255,.12),0 2px 3px rgba(0,0,0,.6)}}
+@media (prefers-reduced-motion:reduce){.strip.stale,.strip.stale .tko,.cnt.stale{animation:none}.strip.stale{box-shadow:0 0 0 2px #55e6ff}}
 @media (prefers-reduced-motion:reduce){.strip.final{animation:none;box-shadow:0 0 0 2px var(--amber),0 2px 3px rgba(0,0,0,.6)}.strip.final .holder,.tag.t-final,.cnt.final,.brw td.blink{animation:none}}
 @keyframes blink{50%{opacity:.15}}
 @keyframes flash{0%{box-shadow:0 0 0 3px var(--amber),0 0 18px var(--amber)}100%{box-shadow:0 2px 3px rgba(0,0,0,.6)}}
@@ -141,6 +149,53 @@ button{font-family:inherit}
   .strip .c4{display:none}
   .search{width:100%}
 }
+
+/* ======================= RADAR ======================= */
+#radar{position:fixed;inset:0;z-index:8;background:#010805;color:#9fe8b4;display:flex;flex-direction:column;font-family:var(--mono)}
+.rtop{display:flex;flex-wrap:wrap;align-items:center;gap:10px 20px;padding:10px 16px;padding-top:max(10px,env(safe-area-inset-top));background:#020c07;border-bottom:1px solid #0f3a22}
+.rtop .brand b{color:#7dffa0}
+.rtop .brand small{color:#3f8a5c}
+.rrange{display:flex;gap:4px;align-items:center;font-size:10px;letter-spacing:.16em;color:#4f7a5d}
+.rrange span{margin-right:4px}
+.rrange button{background:#03140b;border:1px solid #145c33;color:#5fd38a;font-family:var(--mono);font-size:11px;padding:5px 9px;cursor:pointer;border-radius:2px}
+.rrange button.on{background:#0e4a28;color:#d8ffe5;border-color:#3dff8a}
+.rcnt{display:flex;gap:6px;flex-wrap:wrap}
+.rcnt span{border:1px solid #145c33;padding:3px 8px;font-size:11px;letter-spacing:.12em;color:#5fd38a;border-radius:2px;white-space:nowrap}
+.rcnt b{margin-left:5px;color:#d8ffe5}
+.rcnt .rfin{border-color:var(--amber);color:#ffd88a;animation:cntBlink 1.1s steps(2) infinite}.rcnt .rfin b{color:var(--amber)}
+.rcnt .rovr{border-color:var(--red);color:#ffb3aa}.rcnt .rovr b{color:var(--red)}
+.rcnt .rstl{border-color:#55e6ff;color:#bdf3ff;animation:cntBlink 1.3s steps(2) infinite}.rcnt .rstl b{color:#55e6ff}
+.ritem.stale .e{color:#55e6ff}.ritem.stale .e span{animation:blink 1.3s steps(2) infinite}
+.ritem.dep .e{color:#55e6ff}
+.rtko{margin-left:6px;background:#062436;border:1px solid #1d5f86;color:#9fe9ff;font-family:var(--mono);font-size:10px;padding:2px 7px;cursor:pointer;border-radius:2px}
+.rtko:hover{background:#1d5f86;color:#fff}
+#rClose{background:#06251a;border-color:#1f7a45;color:#d8ffe5}
+.rbody{flex:1;display:flex;min-height:0}
+.rwrap{flex:1;position:relative;min-width:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+#rCvs{display:block;cursor:crosshair;touch-action:manipulation}
+.rside{width:340px;flex:none;overflow:auto;border-left:1px solid #0f3a22;background:#020c07;padding:6px 12px 30px;font-size:11.5px}
+.rsec h3{margin:12px 0 4px;font-size:10.5px;letter-spacing:.2em;color:#4fbf78;font-weight:500;border-bottom:1px solid #0f3a22;padding-bottom:4px;display:flex;gap:8px}
+.rsec h3 small{color:#2f7a4c;letter-spacing:.08em}
+.rsec h3 b{margin-left:auto;color:#d8ffe5}
+.ritem{display:grid;grid-template-columns:8px 70px minmax(0,1fr) auto;gap:8px;align-items:center;padding:5px 4px;cursor:pointer;border-radius:2px;color:#bff5cf}
+.ritem:hover,.ritem.hl{background:#06251a}
+.ritem i{width:8px;height:8px;border-radius:50%}
+.ritem .c{font-weight:700;letter-spacing:.03em}
+.ritem .t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#86c99c}
+.ritem .e{font-size:10.5px;color:#7dffa0;white-space:nowrap}
+.ritem.final .e{color:var(--amber)}.ritem.over .e{color:var(--red)}.ritem.done .t{text-decoration:line-through}
+.rempty{color:#2f6b45;font-size:10.5px;letter-spacing:.12em;padding:4px}
+.rlegend{margin-top:18px;font-size:10.5px;line-height:1.75;color:#5fa878;border-top:1px solid #0f3a22;padding-top:8px}
+.rlegend b{font-weight:400}
+.rtip{position:absolute;pointer-events:none;background:rgba(1,12,6,.95);border:1px solid #3dff8a;color:#d8ffe5;padding:7px 9px;font-size:11.5px;max-width:290px;line-height:1.45;z-index:2;box-shadow:0 4px 14px rgba(0,0,0,.6)}
+.rtip i{color:#ffd88a;font-style:normal}
+@media (max-width:860px){
+  .rbody{flex-direction:column;overflow:auto}
+  .rwrap{flex:none;height:min(100vw,72vh)}
+  .rside{width:auto;border-left:0;border-top:1px solid #0f3a22;overflow:visible}
+  .rtop{padding:8px 10px;gap:8px 12px}
+}
+@media (max-width:560px){.rtop .clock,.rtop .brand small,.rrange span{display:none}.rcnt span{font-size:10px;padding:2px 6px}}
 
 /* ======================= dBASE ======================= */
 #dbase{position:fixed;inset:0;z-index:10;background:#0000aa;color:#aaaaaa;font-family:var(--dos);font-size:clamp(18px,1vw + 10px,26px);line-height:1.2;display:flex;flex-direction:column;overflow:hidden}
@@ -270,6 +325,7 @@ select.f option{background:#aaaaaa;color:#000}
     <div class="counters" id="counters"></div>
     <div class="spacer"></div>
     <button class="sync" id="syncInd" type="button" title="Estado de la sincronización (clic para configurar)"><i></i><span>SÓLO LOCAL</span></button>
+    <button class="btn" id="btnRadar" type="button" title="Radar de aproximación (tecla R)">◎ Radar</button>
     <button class="btn" id="btnDb" type="button" title="Entrada de datos (tecla D)">⌨ Entrada dBASE</button>
     <button class="btn primary" id="btnNew" type="button" title="Nueva ficha (tecla N)">+ Ficha</button>
   </header>
@@ -279,6 +335,8 @@ select.f option{background:#aaaaaa;color:#000}
     <label class="toggle"><input type="checkbox" id="showDone"> VER ATERRIZADAS</label>
     <label class="toggle" title="Cuántos días antes del plazo empieza a parpadear la ficha">APROX. FINAL
       <select id="appDays" class="appsel"><option value="0">EL MISMO DÍA</option><option value="1">1 DÍA ANTES</option><option value="2">2 DÍAS ANTES</option><option value="3">3 DÍAS ANTES</option><option value="5">5 DÍAS ANTES</option><option value="7">7 DÍAS ANTES</option></select></label>
+    <label class="toggle" title="Las fichas sin fecha que lleven este tiempo en plataforma sin despegar parpadean en azul">PARPADEO EN PLATAFORMA
+      <select id="staleDays" class="appsel"><option value="1">1 DÍA</option><option value="3">3 DÍAS</option><option value="7">7 DÍAS</option><option value="14">14 DÍAS</option><option value="30">30 DÍAS</option></select></label>
   </nav>
   <main class="bays" id="bays"></main>
   <footer class="legend">
@@ -288,9 +346,27 @@ select.f option{background:#aaaaaa;color:#000}
     <span><i style="background:#cfe0ec"></i>P4 BAJA</span>
     <span><i style="background:var(--red)"></i>VENCIDA</span>
     <span><i style="background:var(--amber)"></i>APROXIMACIÓN FINAL (PARPADEA)</span>
-    <span>· CLIC EN FICHA: EDITAR · ARRASTRAR O ▲▼: CAMBIAR DE BAHÍA · ✕ O SUPR: ELIMINAR (CTRL+Z DESHACE) · TECLAS N (NUEVA) · D (dBASE) · / (BUSCAR)</span>
+    <span><i style="background:#55e6ff"></i>DEMASIADO TIEMPO EN PLATAFORMA (PARPADEA)</span>
+    <span>✈ DESPEGAR: INICIAR UNA TAREA SIN FECHA</span>
+    <span>· CLIC EN FICHA: EDITAR · ARRASTRAR O ▲▼: CAMBIAR DE BAHÍA · ✕ O SUPR: ELIMINAR (CTRL+Z DESHACE) · TECLAS N (NUEVA) · D (dBASE) · R (RADAR) · / (BUSCAR)</span>
   </footer>
   <div id="toast" class="toast hidden" role="status"><span id="toastTxt"></span><button type="button" id="toastUndo">↶ DESHACER</button><button type="button" id="toastX" title="Cerrar">✕</button></div>
+</div>
+
+<!-- ======================= RADAR ======================= -->
+<div id="radar" class="hidden">
+  <header class="rtop">
+    <div class="brand"><b>◎ RADAR DE APROXIMACIÓN</b><small>TMA CÁCERES · PISTA 27 · DISTANCIA = TIEMPO HASTA EL PLAZO</small></div>
+    <div class="clock"><small>UTC</small><b id="rClk">--:--Z</b></div>
+    <div class="rcnt" id="rCnt"></div>
+    <div class="rrange" id="rRange"><span>ALCANCE</span><button type="button" data-r="7">7D</button><button type="button" data-r="30">30D</button><button type="button" data-r="90">90D</button></div>
+    <div class="spacer"></div>
+    <button class="btn" id="rClose" type="button" title="Volver al panel (Esc)">▤ Panel de fichas</button>
+  </header>
+  <div class="rbody">
+    <div class="rwrap" id="rWrap"><canvas id="rCvs" aria-label="Radar de tareas"></canvas><div id="rTip" class="rtip hidden"></div></div>
+    <aside class="rside" id="rSide"></aside>
+  </div>
 </div>
 
 <!-- ======================= dBASE ======================= -->
@@ -403,7 +479,7 @@ Abriendo C:\PEPE\TAREAS.DBF …
 /* =========================================================
    CONSTANTES Y UTILIDADES
    ========================================================= */
-const VERSION='1.2';
+const VERSION='1.4';
 const LS_KEY='pepe-atc-db-v1', LS_SYNC='pepe-atc-sync-v1', LS_UI='pepe-atc-ui-v1';
 const STATUS=[
   {k:'PEND',bay:'EN PLATAFORMA',sub:'pendientes'},
@@ -484,7 +560,7 @@ function normTask(t){
     status:SKEYS.includes(t.status)?t.status:'PEND',
     start:String(t.start||''), due:String(t.due||''), time:String(t.time||''), who:String(t.who||''),
     effort:eff, progress:Math.max(0,Math.min(100,Math.round(+t.progress||0))), notes:String(t.notes||''),
-    deleted:!!t.deleted, demo:!!t.demo, createdAt:+t.createdAt||0, updatedAt:+t.updatedAt||0, doneAt:+t.doneAt||0 };
+    deleted:!!t.deleted, demo:!!t.demo, createdAt:+t.createdAt||0, updatedAt:+t.updatedAt||0, doneAt:+t.doneAt||0, startedAt:+t.startedAt||0 };
 }
 function normalizeDB(d){
   d=d&&typeof d==='object'?d:{};
@@ -555,7 +631,7 @@ function applyMerged(m){
 /* =========================================================
    PREFERENCIAS DE INTERFAZ
    ========================================================= */
-function loadUI(){let u={};try{u=JSON.parse(localStorage.getItem(LS_UI))||{}}catch(e){}return{hidden:Array.isArray(u.hidden)?u.hidden:[],showDone:u.showDone!==false,order:u.order||'n',filter:u.filter||'all',lastArea:u.lastArea||'',approach:[0,1,2,3,5,7].includes(u.approach)?u.approach:2}}
+function loadUI(){let u={};try{u=JSON.parse(localStorage.getItem(LS_UI))||{}}catch(e){}return{hidden:Array.isArray(u.hidden)?u.hidden:[],showDone:u.showDone!==false,order:u.order||'n',filter:u.filter||'all',lastArea:u.lastArea||'',approach:[0,1,2,3,5,7].includes(u.approach)?u.approach:2,stale:[1,3,7,14,30].includes(u.stale)?u.stale:7}}
 const UI=loadUI();
 let Q='';
 function saveUI(){try{localStorage.setItem(LS_UI,JSON.stringify(UI))}catch(e){}}
@@ -572,16 +648,23 @@ function phase(t){
   if(d<=UI.approach)return 'final';
   return null;
 }
+/* Tiempo en plataforma (tareas pendientes sin fecha) y tiempo desde el despegue */
+function platRef(t){let ref=t.createdAt>1?t.createdAt:0;if(t.start){const [y,m,d]=t.start.split('-').map(Number);ref=Math.max(ref,new Date(y,m-1,d).getTime())}return ref||t.updatedAt||now()}
+function platDays(t){return Math.max(0,Math.floor((now()-platRef(t))/864e5))}
+function isStale(t){return !t.deleted&&t.status==='PEND'&&!t.due&&platDays(t)>=UI.stale}
+function depHours(t){let ref=t.startedAt;if(!ref&&t.start){const [y,m,d]=t.start.split('-').map(Number);ref=new Date(y,m-1,d,8).getTime()}return Math.max(0,(now()-(ref||t.updatedAt||now()))/36e5)}
+function takeoff(t){if(!t)return;setStatus(t,'CURS');if(!t.start||t.start>todayISO())t.start=todayISO();persist();toast(`✈ ${codeOf(t)} despegando`,false);setTimeout(()=>focusStrip(t.id,true),30)}
 function renderFilters(){
   $('#chips').innerHTML=`<button type="button" class="chip all" data-a="*">TODAS</button>`+
     DB.areas.map(a=>`<button type="button" class="chip ${UI.hidden.includes(a.code)?'off':''}" data-a="${esc(a.code)}" style="--ac:${col(a.color)}" title="${esc(a.name)}">${esc(a.code)}</button>`).join('');
   $('#showDone').checked=UI.showDone;
   $('#appDays').value=String(UI.approach);
+  $('#staleDays').value=String(UI.stale);
 }
 function stripHTML(t){
   const a=areaOf(t.area), done=t.status==='HECH', d=t.due?daysUntil(t.due):null;
   const ph=phase(t);
-  let cls='strip p'+t.pri; if(done)cls+=' done'; else if(ph)cls+=' '+ph;
+  let cls='strip p'+t.pri; if(done)cls+=' done'; else if(ph)cls+=' '+ph; else if(isStale(t))cls+=' stale';
   let eta='——', dow='ETA', tag='<span class="sm">SIN LÍMITE</span>';
   if(t.due){
     const [y,m,dd]=t.due.split('-');
@@ -593,6 +676,10 @@ function stripHTML(t){
     else if(d===0)tag=`<span class="tag t-today">HOY ${t.time||''}</span>`;
     else if(d===1)tag=`<span class="tag t-today">MAÑANA</span>`;
     else tag=`<span class="tag">T-${d}d</span>`;
+  }
+  if(!t.due&&!done){
+    if(t.status==='PEND'){const pd=platDays(t);dow='EN PLATAF.';eta=pd+'d';tag=`<button type="button" class="tko" data-tko="1" title="Iniciar la tarea: pasa a «En vuelo»">✈ DESPEGAR</button>`}
+    else if(t.status==='CURS'){const e=depHours(t);dow='DESPEGÓ';eta=e<24?'HOY':'+'+Math.floor(e/24)+'d';tag='<span class="sm">SIN LÍMITE</span>'}
   }
   const si=SKEYS.indexOf(t.status);
   const note=(t.notes||'').split('\n').find(l=>l.trim())||'';
@@ -612,9 +699,10 @@ function renderBoard(){
   const active=live.filter(t=>t.status!=='HECH');
   const overdue=active.filter(t=>phase(t)==='over').length;
   const fin=active.filter(t=>phase(t)==='final').length;
+  const stl=active.filter(isStale).length;
   const today=active.filter(t=>t.due&&daysUntil(t.due)===0).length;
   const urg=active.filter(t=>t.pri===1).length;
-  $('#counters').innerHTML=`<span class="cnt">TRÁFICO<b>${active.length}</b></span><span class="cnt ${urg?'alert':''}">URG<b>${urg}</b></span><span class="cnt ${overdue?'alert':''}">VENCIDAS<b>${overdue}</b></span><span class="cnt ${fin?'final':''}" title="Fichas en aproximación final">APROX<b>${fin}</b></span><span class="cnt ${today?'warn':''}">HOY<b>${today}</b></span>`;
+  $('#counters').innerHTML=`<span class="cnt">TRÁFICO<b>${active.length}</b></span><span class="cnt ${urg?'alert':''}">URG<b>${urg}</b></span><span class="cnt ${overdue?'alert':''}">VENCIDAS<b>${overdue}</b></span><span class="cnt ${fin?'final':''}" title="Fichas en aproximación final">APROX<b>${fin}</b></span><span class="cnt ${today?'warn':''}">HOY<b>${today}</b></span><span class="cnt ${stl?'stale':''}" title="Fichas sin fecha que llevan mucho tiempo en plataforma">PLAT<b>${stl}</b></span>`;
   const q=Q.trim().toLowerCase();
   const vis=t=>!UI.hidden.includes(t.area)&&(!q||(codeOf(t)+' '+t.title+' '+t.who+' '+t.notes).toLowerCase().includes(q));
   const cutoff=now()-14*864e5;
@@ -624,10 +712,13 @@ function renderBoard(){
     else list.sort(taskSort);
     return `<section class="bay" data-s="${s.k}"><h2>${s.bay}<small>${s.sub}</small><span class="n">${list.length}</span>${s.k==='HECH'&&list.length?'<button type="button" class="baybtn" data-clear="HECH" title="Eliminar todas las fichas aterrizadas visibles">VACIAR</button>':''}</h2><div class="rack" data-s="${s.k}">${list.map(stripHTML).join('')||'<div class="empty">— SIN TRÁFICO —</div>'}</div></section>`;
   }).join('');
+  if(RADAR.open)renderRadarList();
 }
 function setStatus(t,k){
   const was=t.status;if(was===k)return;
   t.status=k;
+  if(k==='CURS')t.startedAt=now();
+  if(k==='PEND')t.startedAt=0;
   if(k==='HECH'){t.doneAt=now();t.progress=100}
   else{t.doneAt=0;if(was==='HECH'&&t.progress===100)t.progress=90}
   t.updatedAt=now();
@@ -678,6 +769,7 @@ function focusStrip(id,flash){const s=document.querySelector(`.strip[data-id="${
     const s=e.target.closest('.strip');if(!s)return;
     const t=byId(s.dataset.id);if(!t)return;
     if(e.target.closest('button[data-del]')){e.stopPropagation();boardDelete(t);return}
+    if(e.target.closest('[data-tko]')){e.stopPropagation();takeoff(t);return}
     const b=e.target.closest('button[data-mv]');
     if(b){e.stopPropagation();moveTask(t,+b.dataset.mv);focusStrip(t.id,true);return}
     openDb('edit',t.id);
@@ -696,6 +788,7 @@ function focusStrip(id,flash){const s=document.querySelector(`.strip[data-id="${
   $('#q').addEventListener('input',e=>{Q=e.target.value;renderBoard()});
   $('#showDone').addEventListener('change',e=>{UI.showDone=e.target.checked;saveUI();renderBoard()});
   $('#appDays').addEventListener('change',e=>{UI.approach=+e.target.value;saveUI();renderBoard()});
+  $('#staleDays').addEventListener('change',e=>{UI.stale=+e.target.value;saveUI();renderBoard()});
   $('#btnDb').onclick=()=>openDb();
   $('#btnNew').onclick=()=>openDb('new');
   $('#syncInd').onclick=()=>openDb('sync');
@@ -703,6 +796,7 @@ function focusStrip(id,flash){const s=document.querySelector(`.strip[data-id="${
   $('#toastX').onclick=hideToast;
 })();
 function boardKey(e){
+  if(RADAR.open){if(e.key==='Escape'){e.preventDefault();closeRadar()}return}
   const tg=e.target;
   const inField=tg.matches&&tg.matches('input,textarea,select');
   if((e.ctrlKey||e.metaKey)&&!e.altKey&&(e.key==='z'||e.key==='Z')&&!inField){e.preventDefault();boardUndo();return}
@@ -717,15 +811,17 @@ function boardKey(e){
   const k=e.key.toLowerCase();
   if(k==='n'){e.preventDefault();openDb('new')}
   else if(k==='d'){e.preventDefault();openDb()}
+  else if(k==='r'){e.preventDefault();openRadar()}
   else if(k==='/'){e.preventDefault();$('#q').focus()}
 }
 function tickClock(){
   const d=new Date();
   $('#clkL').textContent=`${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
   $('#clkZ').textContent=`${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}Z`;
+  $('#rClk').textContent=`${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}Z`;
   const dc=$('#dClock');if(dc)dc.textContent=`${pad(d.getHours())}:${pad(d.getMinutes())}`;
   const day=todayISO();if(day!==tickClock.day){if(tickClock.day)renderBoard();tickClock.day=day}
-  if(d.getSeconds()===0){const sig=DB.tasks.map(phase).join();if(sig!==tickClock.sig){if(tickClock.sig!==undefined&&!$('#board').classList.contains('hidden')&&!document.querySelector('.strip.dragging'))renderBoard();tickClock.sig=sig}}
+  if(d.getSeconds()===0){const sig=DB.tasks.map(t=>phase(t)+(isStale(t)?'s':'')).join();if(sig!==tickClock.sig){if(tickClock.sig!==undefined&&!$('#board').classList.contains('hidden')&&!document.querySelector('.strip.dragging'))renderBoard();tickClock.sig=sig}}
 }
 
 /* =========================================================
@@ -764,6 +860,7 @@ function startDraft(base){
 
 /* ---------- Abrir / cerrar ---------- */
 function openDb(mode,id){
+  if(RADAR.open){RADAR.back=true;closeRadar()}
   $('#board').classList.add('hidden');$('#dbase').classList.remove('hidden');document.body.classList.add('dos-on');
   if(id)DBS.cur=id;
   if(mode==='new'){startDraft();showMode('edit')}
@@ -776,6 +873,7 @@ function closeDb(){
   DBS.dirty=false;closeMenu();
   $('#dbase').classList.add('hidden');$('#board').classList.remove('hidden');document.body.classList.remove('dos-on');
   renderBoard();
+  if(RADAR.back){RADAR.back=false;openRadar();return}
   if(DBS.cur)setTimeout(()=>focusStrip(DBS.cur,true),30);
 }
 function showSplash(){
@@ -864,6 +962,8 @@ function saveRecord(manual){
   Object.assign(t,v);
   if(t.status==='HECH'&&was!=='HECH'){t.doneAt=now();t.progress=100}
   if(t.status!=='HECH')t.doneAt=0;
+  if(t.status==='CURS'&&was!=='CURS')t.startedAt=now();
+  if(t.status==='PEND')t.startedAt=0;
   t.updatedAt=now();
   UI.lastArea=t.area;saveUI();
   persist();
@@ -1120,6 +1220,11 @@ AVISOS DE PLAZO
   Fecha en rojo: vencida
   El margen se elige en el panel: «APROX. FINAL»
 
+RADAR: botón «◎ Radar» del panel (o tecla R)
+  Con fecha: aviones en llegada hacia la pista
+  Sin fecha: aparcados en plataforma; «✈ DESPEGAR» los inicia
+  Estado parpadeando en la tabla: mucho tiempo en plataforma
+
 ESTADOS (bahías del panel)
   PEND En plataforma · CURS En vuelo
   ESPE En espera     · HECH Aterrizada</pre>`});
@@ -1166,7 +1271,7 @@ function renderBrowse(){
   let idx=l.findIndex(t=>t.id===DBS.cur);
   if(idx<0)idx=0;
   if(l[idx])DBS.cur=l[idx].id;
-  const rows=l.map((t,x)=>`<tr class="${x===idx?'sel':''} ${DBS.sel.has(t.id)?'mk':''} ${t.deleted?'del':''} ${t.status==='HECH'?'dn':''}" data-x="${x}"><td class="r">${t.n}</td><td class="bm" title="Marcar">${DBS.sel.has(t.id)?'■':t.deleted?'*':'·'}</td><td>${esc(codeOf(t))}</td><td class="tt">${esc(t.title)}</td><td>${t.pri}</td><td>${t.status}</td><td class="${({final:'blink',over:'lateD'})[phase(t)]||''}">${fmtDate(t.due)||'  /  /    '}</td><td class="r">${t.progress}</td><td>${esc(t.who)}</td></tr>`).join('');
+  const rows=l.map((t,x)=>`<tr class="${x===idx?'sel':''} ${DBS.sel.has(t.id)?'mk':''} ${t.deleted?'del':''} ${t.status==='HECH'?'dn':''}" data-x="${x}"><td class="r">${t.n}</td><td class="bm" title="Marcar">${DBS.sel.has(t.id)?'■':t.deleted?'*':'·'}</td><td>${esc(codeOf(t))}</td><td class="tt">${esc(t.title)}</td><td>${t.pri}</td><td class="${isStale(t)?'blink':''}">${t.status}</td><td class="${({final:'blink',over:'lateD'})[phase(t)]||''}">${fmtDate(t.due)||'  /  /    '}</td><td class="r">${t.progress}</td><td>${esc(t.who)}</td></tr>`).join('');
   $('#brwWrap').innerHTML=`<table class="brw"><thead><tr><th>REG</th><th>M</th><th>CÓDIGO</th><th>TAREA</th><th>P</th><th>ESTADO</th><th>LÍMITE</th><th>AV%</th><th>PERSONA</th></tr></thead><tbody>${rows||'<tr><td colspan="9">** Fichero vacío · F3 para añadir un registro **</td></tr>'}</tbody></table>`;
   const sel=$('#brwWrap tr.sel');if(sel)sel.scrollIntoView({block:'nearest'});
   updateStatus();
@@ -1513,6 +1618,284 @@ document.addEventListener('keydown',e=>{
   if(DBS.mode==='browse')return browseKey(e);
   if(DBS.mode==='dot')return dotKey(e);
 });
+
+/* =========================================================
+   RADAR DE APROXIMACIÓN
+   ========================================================= */
+const RADAR={open:false,raf:0,back:false,range:30,blips:[],hl:null,tapId:null,ptype:'mouse',bg:null,size:0,cx:0,cy:0,R:0,k:1,dpr:1,lastList:0};
+try{const v=+localStorage.getItem('pepe-atc-radar-range');if([7,30,90].includes(v))RADAR.range=v}catch(e){}
+const RINGS={7:[1,2,3,5,7],30:[1,3,7,14,30],90:[1,7,14,30,60,90]};
+const RFONT="'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace";
+const TAU=Math.PI*2, CTR=.2, CYAN='#55e6ff';
+const STNAME={PEND:'En plataforma (pendiente)',CURS:'En vuelo (en curso)',ESPE:'En espera (de terceros)',HECH:'Aterrizada'};
+function hrsLeft(t){const [y,m,d]=t.due.split('-').map(Number);let hh=23,mi=59;if(t.time){const p=t.time.split(':');hh=+p[0];mi=+p[1]}return(new Date(y,m-1,d,hh,mi).getTime()-now())/36e5}
+function rOf(h){const D=RADAR.range*24,x=Math.max(0,Math.min(h,D));return CTR+(.98-CTR)*Math.log1p(x/3)/Math.log1p(D/3)}
+function hashN(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return(h>>>0)/4294967295}
+function etaTxt(h){if(h<0){return h>-24?`${Math.ceil(-h)}h`:`${Math.ceil(-h/24)}d`}if(h<24)return Math.max(1,Math.round(h))+'h';return Math.round(h/24)+'d'}
+/* Sectores de llegada: el este (LOC 27) y el oeste (salidas) quedan reservados */
+function uAng(u){return(u<120?30+u:210+(u-120))*Math.PI/180}
+function areaSectors(){
+  const areas=DB.areas.filter(a=>!UI.hidden.includes(a.code)),n=Math.max(1,areas.length),span=240/n,m={};
+  areas.forEach((a,i)=>{m[a.code]={u0:i*span,span,c:uAng((i+.5)*span),color:col(a.color)}});
+  return m;
+}
+function sectorAngle(sec,t){const s=sec[t.area];if(!s)return uAng(hashN(t.id)*239);return uAng(Math.min(239.9,s.u0+s.span*(.14+.72*hashN(t.id))))}
+function radarGeom(){const {cx,cy,R,k}=RADAR,L=.16*R;return{L,xe:cx+L/2,xw:cx-L/2,ax0:cx-.11*R,ax1:cx+.11*R,ay0:cy+9*k,ay1:cy+.13*R}}
+function radarSets(){
+  const live=DB.tasks.filter(t=>!t.deleted&&!UI.hidden.includes(t.area));
+  const act=live.filter(t=>t.status!=='HECH');
+  return{live,act,
+    finals:act.filter(t=>phase(t)==='final').sort((a,b)=>hrsLeft(a)-hrsLeft(b)),
+    overs:act.filter(t=>phase(t)==='over').sort((a,b)=>a.n-b.n),
+    holds:act.filter(t=>t.status==='ESPE'&&!phase(t)),
+    next:act.filter(t=>t.due&&!phase(t)&&t.status!=='ESPE').sort((a,b)=>hrsLeft(a)-hrsLeft(b)),
+    parked:act.filter(t=>t.status==='PEND'&&!t.due).sort((a,b)=>platRef(a)-platRef(b)),
+    deps:act.filter(t=>t.status==='CURS'&&!t.due).sort((a,b)=>depHours(a)-depHours(b)),
+    landed:live.filter(t=>t.status==='HECH'&&t.doneAt&&isoOf(new Date(t.doneAt))===todayISO())};
+}
+function openRadar(){
+  if(!$('#dbase').classList.contains('hidden'))return;
+  RADAR.open=true;$('#radar').classList.remove('hidden');document.body.classList.add('dos-on');
+  $$('#rRange button').forEach(b=>b.classList.toggle('on',+b.dataset.r===RADAR.range));
+  sizeRadar();renderRadarList();
+  cancelAnimationFrame(RADAR.raf);RADAR.raf=requestAnimationFrame(radarFrame);
+}
+function closeRadar(){RADAR.open=false;cancelAnimationFrame(RADAR.raf);$('#radar').classList.add('hidden');$('#rTip').classList.add('hidden');RADAR.hl=null;document.body.classList.remove('dos-on')}
+function sizeRadar(){
+  const w=$('#rWrap'),size=Math.max(220,Math.floor(Math.min(w.clientWidth,w.clientHeight)-8));
+  const dpr=Math.min(2.5,window.devicePixelRatio||1),c=$('#rCvs');
+  c.style.width=size+'px';c.style.height=size+'px';c.width=Math.round(size*dpr);c.height=Math.round(size*dpr);
+  Object.assign(RADAR,{size,dpr,cx:size/2,cy:size/2,R:size/2-30,k:Math.max(.82,Math.min(1.3,size/720))});
+  buildRadarBg();
+}
+function plane(ctx,x,y,hd,s,fill){
+  ctx.save();ctx.translate(x,y);ctx.rotate(hd);ctx.beginPath();
+  ctx.moveTo(s*1.25,0);ctx.lineTo(s*.25,-s*.2);ctx.lineTo(-s*.05,-s*1.05);ctx.lineTo(-s*.38,-s*1.05);ctx.lineTo(-s*.2,-s*.2);
+  ctx.lineTo(-s*.8,-s*.16);ctx.lineTo(-s*1.02,-s*.55);ctx.lineTo(-s*1.2,-s*.55);ctx.lineTo(-s*1.05,0);ctx.lineTo(-s*1.2,s*.55);
+  ctx.lineTo(-s*1.02,s*.55);ctx.lineTo(-s*.8,s*.16);ctx.lineTo(-s*.2,s*.2);ctx.lineTo(-s*.38,s*1.05);ctx.lineTo(-s*.05,s*1.05);ctx.lineTo(s*.25,s*.2);ctx.closePath();
+  if(fill)ctx.fill();else{ctx.lineWidth=1.3;ctx.stroke();ctx.lineWidth=1}
+  ctx.restore();
+}
+function buildRadarBg(){
+  const {size,dpr,cx,cy,R,k}=RADAR;if(!size)return;
+  const bg=RADAR.bg||(RADAR.bg=document.createElement('canvas'));
+  bg.width=Math.round(size*dpr);bg.height=Math.round(size*dpr);
+  const g=bg.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);g.clearRect(0,0,size,size);
+  const P=(a,r)=>[cx+r*Math.cos(a),cy+r*Math.sin(a)],G=radarGeom();
+  const grd=g.createRadialGradient(cx,cy,0,cx,cy,R);grd.addColorStop(0,'#05260f');grd.addColorStop(1,'#010a05');
+  g.fillStyle=grd;g.beginPath();g.arc(cx,cy,R,0,TAU);g.fill();g.strokeStyle='#1f7a45';g.lineWidth=1.5;g.stroke();g.lineWidth=1;
+  g.textAlign='center';g.textBaseline='middle';
+  for(let deg=0;deg<360;deg+=5){
+    const a=(deg-90)*Math.PI/180,len=deg%30===0?9:deg%10===0?6:3;
+    g.strokeStyle=deg%30===0?'#3dbb6c':'#1d5c36';g.beginPath();g.moveTo(...P(a,R));g.lineTo(...P(a,R+len));g.stroke();
+    if(deg%30===0){g.fillStyle='#3dbb6c';g.font=`${10*k}px ${RFONT}`;g.fillText(pad(deg/10),...P(a,R+19))}
+  }
+  g.save();g.beginPath();g.arc(cx,cy,R,0,TAU);g.clip();
+  const sec=areaSectors(),ents=Object.entries(sec);
+  g.strokeStyle='rgba(61,255,138,.09)';
+  ents.forEach(([,s])=>{if(s.u0>0&&Math.abs(s.u0-120)>.01){const a0=uAng(s.u0);g.beginPath();g.moveTo(...P(a0,CTR*R));g.lineTo(...P(a0,R));g.stroke()}});
+  g.strokeStyle='rgba(61,255,138,.2)';
+  [30,150,210,330].forEach(dg=>{const a=dg*Math.PI/180;g.beginPath();g.moveTo(...P(a,CTR*R));g.lineTo(...P(a,R));g.stroke()});
+  g.font=`600 ${11*k}px ${RFONT}`;
+  ents.forEach(([code,s])=>{g.fillStyle=s.color;g.globalAlpha=.8;g.fillText(code,...P(s.c,R*.93));g.globalAlpha=1});
+  RINGS[RADAR.range].forEach(d=>{
+    const rr=rOf(d*24)*R;g.strokeStyle='rgba(61,255,138,.24)';g.setLineDash([2,5]);g.beginPath();g.arc(cx,cy,rr,0,TAU);g.stroke();g.setLineDash([]);
+    g.font=`${10*k}px ${RFONT}`;const [lx,ly]=P(-Math.PI/2-.1,rr);g.fillStyle='#010a05';g.fillRect(lx-14*k,ly-6*k,28*k,12*k);g.fillStyle='#3dbb6c';g.fillText(d===1?'24H':d+'D',lx,ly);
+  });
+  g.strokeStyle='rgba(61,255,138,.5)';g.beginPath();g.arc(cx,cy,CTR*R,0,TAU);g.stroke();
+  g.fillStyle='#3dbb6c';g.font=`${9*k}px ${RFONT}`;g.fillText('AHORA',cx,cy-CTR*R+9*k);
+  g.strokeStyle='rgba(255,77,61,.35)';g.setLineDash([3,4]);g.beginPath();g.arc(cx,cy,.175*R,0,TAU);g.stroke();g.setLineDash([]);
+  // Localizador LOC 27 (llegadas en final, por el este)
+  g.strokeStyle='rgba(255,176,0,.2)';g.beginPath();g.moveTo(G.xe,cy);g.lineTo(cx+R,cy-R*.07);g.moveTo(G.xe,cy);g.lineTo(cx+R,cy+R*.07);g.stroke();
+  g.strokeStyle='rgba(255,176,0,.45)';g.setLineDash([8,6]);g.beginPath();g.moveTo(G.xe,cy);g.lineTo(cx+R,cy);g.stroke();g.setLineDash([]);
+  const eod=new Date();eod.setHours(23,59,0,0);const xf=cx+rOf((eod-now())/36e5+UI.approach*24)*R;
+  g.strokeStyle='#ffb000';g.lineWidth=2;g.beginPath();g.moveTo(xf,cy-7*k);g.lineTo(xf,cy+7*k);g.stroke();g.lineWidth=1;
+  g.fillStyle='#ffb000';g.font=`600 ${9.5*k}px ${RFONT}`;g.fillText('FAF',xf,cy-14*k);
+  g.textAlign='right';g.fillText('LOC 27 ◂ LLEGADAS',cx+R*.97,cy+13*k);
+  // Salidas (SID) por el oeste
+  g.strokeStyle='rgba(85,230,255,.16)';g.beginPath();g.moveTo(G.xw,cy);g.lineTo(cx-R,cy-R*.42);g.moveTo(G.xw,cy);g.lineTo(cx-R,cy+R*.42);g.stroke();
+  g.strokeStyle='rgba(85,230,255,.4)';g.setLineDash([8,6]);g.beginPath();g.moveTo(G.xw,cy);g.lineTo(cx-R,cy);g.stroke();g.setLineDash([]);
+  g.fillStyle=CYAN;g.textAlign='left';g.fillText('SALIDAS ◂ SID',cx-R*.97,cy+13*k);g.textAlign='center';
+  g.restore();
+  // Pista y plataforma
+  g.fillStyle='#cfeedd';g.fillRect(G.xw,cy-2.4*k,G.L,4.8*k);
+  g.fillStyle='#010a05';for(let i=1;i<8;i++)g.fillRect(G.xw+i*G.L/8-2*k,cy-.5,4*k,1);
+  g.fillStyle='#9fe8b4';g.font=`${9*k}px ${RFONT}`;g.fillText('09',G.xw-9*k,cy);g.fillText('27',G.xe+9*k,cy);
+  g.font=`600 ${9*k}px ${RFONT}`;g.fillText('CÁCERES',cx,cy-11*k);
+  g.strokeStyle='rgba(85,230,255,.3)';g.beginPath();g.moveTo(cx,cy+2.4*k);g.lineTo(cx,G.ay0);g.stroke();
+  g.fillStyle='rgba(85,230,255,.06)';g.fillRect(G.ax0,G.ay0,G.ax1-G.ax0,G.ay1-G.ay0);
+  g.strokeStyle='rgba(85,230,255,.4)';g.strokeRect(G.ax0,G.ay0,G.ax1-G.ax0,G.ay1-G.ay0);
+  g.fillStyle=CYAN;g.font=`${8*k}px ${RFONT}`;g.fillText('PLATAFORMA',cx,G.ay1+7*k);
+}
+function radarFrame(){
+  if(!RADAR.open)return;
+  if(now()-RADAR.lastList>30000)renderRadarList();
+  drawRadar();
+  RADAR.raf=requestAnimationFrame(radarFrame);
+}
+function drawRadar(){
+  const c=$('#rCvs'),ctx=c.getContext('2d'),{size,dpr,cx,cy,R,k}=RADAR,G=radarGeom();
+  ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,size,size);
+  if(RADAR.bg)ctx.drawImage(RADAR.bg,0,0,size,size);
+  const T=performance.now()/1000,S=(T%4)/4*TAU,blink=Math.floor(T*2)%2===0,blinkS=Math.floor(T/.65)%2===0;
+  // barrido
+  ctx.save();ctx.beginPath();ctx.arc(cx,cy,R,0,TAU);ctx.clip();
+  if(ctx.createConicGradient){const cg=ctx.createConicGradient(S,cx,cy);cg.addColorStop(0,'rgba(61,255,138,0)');cg.addColorStop(.78,'rgba(61,255,138,0)');cg.addColorStop(1,'rgba(61,255,138,.24)');ctx.fillStyle=cg;ctx.fillRect(cx-R,cy-R,2*R,2*R)}
+  else for(let i=0;i<28;i++){ctx.fillStyle=`rgba(61,255,138,${.2*(1-i/28)})`;ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,R,S-(i+1)*.05,S-i*.05);ctx.fill()}
+  ctx.strokeStyle='rgba(150,255,180,.9)';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+R*Math.cos(S),cy+R*Math.sin(S));ctx.stroke();ctx.lineWidth=1;
+  ctx.restore();
+  // posiciones
+  const sec=areaSectors(),Z=radarSets(),blips=[];
+  const pn=Z.parked.length,aw=G.ax1-G.ax0,ah=G.ay1-G.ay0;
+  const sp=Math.min(12*k,Math.sqrt(aw*ah/Math.max(1,pn))),cols=Math.max(1,Math.floor(aw/sp));
+  for(const t of Z.act){
+    const ph=phase(t);let kind,a=0,r=0,hd=0,x,y,hx,hy,h=0;
+    if(t.due){
+      h=hrsLeft(t);
+      if(ph==='over'){const i=Z.overs.indexOf(t);a=i/Z.overs.length*TAU+T*TAU/60;r=.175;kind='over';hd=a+Math.PI/2}
+      else if(ph==='final'){const i=Z.finals.indexOf(t);r=rOf(h);a=i?((i%2?1:-1)*Math.ceil(i/2)*.055):0;kind='final';hd=Math.PI}
+      else{a=sectorAngle(sec,t);r=rOf(h);kind=t.status==='ESPE'?'hold':'in';hd=a+Math.PI}
+    }else if(t.status==='PEND'){
+      const i=Z.parked.indexOf(t);kind='park';hd=-Math.PI/2;
+      x=G.ax0+sp/2+(i%cols)*sp;y=G.ay0+sp/2+Math.floor(i/cols)*sp;
+    }else if(t.status==='CURS'){
+      h=depHours(t);a=Math.PI+(hashN(t.id)-.5)*.75;r=rOf(h);kind='dep';hd=a;
+    }else{a=Math.PI+(hashN(t.id)-.5)*.6;r=.45;kind='hold'}
+    if(kind!=='park'){hx=cx+r*R*Math.cos(a);hy=cy+r*R*Math.sin(a);x=hx;y=hy}
+    if(kind==='hold'){
+      const q=T*TAU/10+hashN(t.id)*TAU,L=11*k,W=5*k,tx=-Math.sin(a),ty=Math.cos(a),rx=Math.cos(a),ry=Math.sin(a);
+      x+=tx*Math.cos(q)*L+rx*Math.sin(q)*W;y+=ty*Math.cos(q)*L+ry*Math.sin(q)*W;
+      hd=Math.atan2(-ty*Math.sin(q)*L+ry*Math.cos(q)*W,-tx*Math.sin(q)*L+rx*Math.cos(q)*W);
+    }
+    blips.push({t,kind,a,hd,x,y,hx,hy,h});
+  }
+  const colorOf=b=>b.kind==='over'?'#ff4d3d':b.kind==='final'?'#ffb000':b.kind==='dep'?CYAN:b.kind==='park'?(isStale(b.t)?CYAN:'#6fbf8a'):col(areaOf(b.t.area).color);
+  // rutas animadas: llegadas hacia la pista, salidas desde la pista
+  ctx.setLineDash([3*k,7*k]);ctx.lineDashOffset=-T*16*k;ctx.lineWidth=1.2;
+  for(const b of blips){
+    if(b.kind!=='in'&&b.kind!=='final'&&b.kind!=='dep')continue;
+    ctx.globalAlpha=b.kind==='final'?.75:.4;ctx.strokeStyle=colorOf(b);ctx.beginPath();
+    if(b.kind==='in'){ctx.moveTo(b.x,b.y);ctx.lineTo(cx+CTR*R*Math.cos(b.a),cy+CTR*R*Math.sin(b.a))}
+    else if(b.kind==='final'){ctx.moveTo(b.x,b.y);ctx.lineTo(G.xe,cy)}
+    else{ctx.moveTo(G.xw,cy);ctx.lineTo(b.x,b.y)}
+    ctx.stroke();
+  }
+  ctx.setLineDash([]);ctx.lineDashOffset=0;ctx.lineWidth=1;
+  const rects=[],fs=10.5*k,lh=12.5*k;ctx.textAlign='left';ctx.textBaseline='top';
+  for(const b of blips){
+    const t=b.t,color=colorOf(b),ang=Math.atan2(b.y-cy,b.x-cx),glow=1-(((S-ang)%TAU+TAU)%TAU)/TAU;
+    let al=.5+.5*glow*glow;
+    if(b.kind==='over')al=blink?1:.3;
+    else if(b.kind==='final')al=blink?1:.55;
+    else if(b.kind==='park')al=isStale(t)?(blinkS?1:.2):.85;
+    if(b.kind==='hold'){ctx.save();ctx.globalAlpha=.8;ctx.translate(b.hx,b.hy);ctx.rotate(b.a+Math.PI/2);ctx.strokeStyle='rgba(255,176,0,.45)';ctx.setLineDash([2,3]);ctx.beginPath();ctx.ellipse(0,0,11*k,5*k,0,0,TAU);ctx.stroke();ctx.setLineDash([]);ctx.restore()}
+    if(b.kind!=='park'){const bx=Math.cos(b.hd),by=Math.sin(b.hd);for(let j=1;j<=4;j++){ctx.globalAlpha=al*(.5-j*.1);ctx.fillStyle=color;ctx.beginPath();ctx.arc(b.x-bx*(j*6+4)*k,b.y-by*(j*6+4)*k,1.6*k,0,TAU);ctx.fill()}}
+    ctx.globalAlpha=al;ctx.fillStyle=color;ctx.strokeStyle=color;
+    const ps=b.kind==='park'?Math.min(4.5*k,sp*.36):(b.kind==='final'||b.kind==='over'?6.5:5.5)*k;
+    plane(ctx,b.x,b.y,b.hd,ps,!(b.kind==='in'&&t.status==='PEND'));
+    if(t.pri===1&&b.kind!=='over'&&b.kind!=='park'){ctx.globalAlpha=al*.7;ctx.beginPath();ctx.arc(b.x,b.y,10*k,0,TAU);ctx.stroke()}
+    if(RADAR.hl===t.id){ctx.globalAlpha=1;ctx.strokeStyle='#ffffff';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(b.x,b.y,13*k,0,TAU);ctx.stroke();ctx.lineWidth=1}
+    if(b.kind==='park'&&!isStale(t)&&RADAR.hl!==t.id)continue;
+    // bloque de datos
+    const l1=codeOf(t),fl=' FL'+pad(Math.round(t.progress*3.5),3);
+    const l2=b.kind==='over'?`${t.pri===1?'7700 ':''}VENC ${etaTxt(b.h)}`
+      :b.kind==='park'?`PLAT ${platDays(t)}d`
+      :b.kind==='dep'?`DEP +${etaTxt(b.h)}${fl}`
+      :b.kind==='hold'&&!t.due?`P${t.pri} HOLD`
+      :`P${t.pri} ${etaTxt(b.h)}${t.status==='CURS'?fl:t.status==='ESPE'?' HOLD':''}`;
+    ctx.font=`600 ${fs}px ${RFONT}`;const w1=ctx.measureText(l1).width;ctx.font=`${fs}px ${RFONT}`;
+    const w=Math.max(w1,ctx.measureText(l2).width)+8,hgt=2*lh+4;
+    const cands=[[10*k,-hgt-6*k],[10*k,6*k],[-w-10*k,-hgt-6*k],[-w-10*k,6*k],[14*k,-hgt/2],[-w-14*k,-hgt/2],
+      [10*k,-2*hgt-12*k],[10*k,hgt+12*k],[-w-10*k,-2*hgt-12*k],[-w-10*k,hgt+12*k],[-w/2,-hgt-16*k],[-w/2,16*k],
+      [w*.6,-2*hgt-14*k],[w*.6,hgt+14*k],[-w*1.6,-hgt/2],[w*.6+14*k,-hgt/2]];
+    let pos=null,best=Infinity;
+    for(let ci=0;ci<cands.length;ci++){
+      let rx=b.x+cands[ci][0],ry=b.y+cands[ci][1],cost=ci*2;
+      if(rx<2||ry<2||rx+w>size-2||ry+hgt>size-2){cost+=5000;rx=Math.min(size-w-2,Math.max(2,rx));ry=Math.min(size-hgt-2,Math.max(2,ry))}
+      for(const q of rects){const ox=Math.min(rx+w,q[0]+q[2])-Math.max(rx,q[0]),oy=Math.min(ry+hgt,q[1]+q[3])-Math.max(ry,q[1]);if(ox>0&&oy>0)cost+=ox*oy+1000}
+      if(cost<best){best=cost;pos=[rx,ry]}
+      if(cost<100)break;
+    }
+    rects.push([pos[0],pos[1],w,hgt]);
+    const la=Math.max(.75,al);
+    ctx.globalAlpha=la*.5;ctx.strokeStyle=color;ctx.beginPath();ctx.moveTo(b.x,b.y);ctx.lineTo(pos[0]+(pos[0]<b.x?w:0),pos[1]+(pos[1]<b.y?hgt:0));ctx.stroke();
+    ctx.globalAlpha=.6;ctx.fillStyle='#010a05';ctx.fillRect(pos[0],pos[1],w,hgt);
+    ctx.globalAlpha=la;ctx.fillStyle=b.kind==='over'?'#ff7d70':b.kind==='final'?'#ffc040':(b.kind==='dep'||b.kind==='park')?'#9fefff':(t.status==='PEND'?'#8fd9a6':'#b4ffcb');
+    ctx.font=`600 ${fs}px ${RFONT}`;ctx.fillText(l1,pos[0]+3,pos[1]+2);
+    ctx.font=`${fs}px ${RFONT}`;ctx.fillText(l2,pos[0]+3,pos[1]+2+lh);
+  }
+  ctx.globalAlpha=1;
+  ctx.fillStyle='#3dbb6c';ctx.font=`${10*k}px ${RFONT}`;ctx.textBaseline='top';ctx.textAlign='left';
+  ctx.fillText(`ALCANCE ${RADAR.range}D`,6,6);ctx.fillText(`FAF: ${UI.approach===0?'MISMO DÍA':UI.approach+'D ANTES'}`,6,6+13*k);
+  ctx.textAlign='right';ctx.fillText(`LLEGADAS ${blips.filter(b=>b.t.due).length} · SALIDAS ${Z.deps.length} · PLATAF. ${pn}`,size-6,6);
+  RADAR.blips=blips.map(b=>({id:b.t.id,x:b.x,y:b.y}));
+}
+function radarHit(x,y){let best=null,bd=20;for(const b of RADAR.blips){const d=Math.hypot(b.x-x,b.y-y);if(d<bd){bd=d;best=b}}return best}
+function showTip(b,x,y,touch){
+  const tip=$('#rTip');
+  if(!b){tip.classList.add('hidden');RADAR.hl=null;return}
+  const t=byId(b.id);if(!t)return;
+  RADAR.hl=t.id;
+  let when;
+  if(t.due){const h=hrsLeft(t),ph=phase(t);when=`Plazo: ${fmtDate(t.due)}${t.time?' '+t.time:''} · ${ph==='over'?'vencida hace '+etaTxt(h):'faltan '+etaTxt(h)}${ph==='final'?'<br><i>✈ En aproximación final</i>':''}`}
+  else if(t.status==='PEND')when=`Sin fecha · en plataforma desde hace ${platDays(t)} día(s)${isStale(t)?'<br><i>⚠ Lleva mucho tiempo sin despegar</i>':''}`;
+  else if(t.status==='CURS')when=`Sin fecha · despegó hace ${etaTxt(depHours(t))}`;
+  else when='Sin fecha · en circuito de espera';
+  tip.innerHTML=`<b>${esc(codeOf(t))}</b> · ${esc(areaOf(t.area).name)}<br>${esc(t.title)}<br>${when}<br>${STNAME[t.status]} · P${t.pri} ${PRI[t.pri]} · ${t.progress}%${touch?'<br><i>Toque otra vez para abrir la ficha</i>':''}`;
+  tip.classList.remove('hidden');
+  const c=$('#rCvs'),wrap=$('#rWrap');
+  let lx=c.offsetLeft+x+16,ly=c.offsetTop+y+14;
+  if(lx+tip.offsetWidth>wrap.clientWidth-4)lx=c.offsetLeft+x-tip.offsetWidth-16;
+  if(ly+tip.offsetHeight>wrap.clientHeight-4)ly=c.offsetTop+y-tip.offsetHeight-14;
+  tip.style.left=Math.max(4,lx)+'px';tip.style.top=Math.max(4,ly)+'px';
+}
+function rItem(t,cls,eta,extra){return `<div class="ritem ${cls}" data-id="${esc(t.id)}"><i style="background:${col(areaOf(t.area).color)}"></i><span class="c">${esc(codeOf(t))}</span><span class="t">${esc(t.title)}</span><span class="e"><span>${eta}</span>${extra||''}</span></div>`}
+function renderRadarList(){
+  RADAR.lastList=now();buildRadarBg();
+  const Z=radarSets(),nst=Z.parked.filter(isStale).length;
+  $('#rCnt').innerHTML=`<span class="${Z.finals.length?'rfin':''}">EN FINAL<b>${Z.finals.length}</b></span><span class="${Z.overs.length?'rovr':''}">SOBRE EL CAMPO<b>${Z.overs.length}</b></span><span class="${nst?'rstl':''}">EN PLATAFORMA<b>${Z.parked.length}</b></span><span>SALIDAS<b>${Z.deps.length}</b></span><span>EN ESPERA<b>${Z.holds.length}</b></span><span>ATERRIZADAS HOY<b>${Z.landed.length}</b></span>`;
+  const sec=(title,sub,items,fn)=>`<div class="rsec"><h3>${title}<small>${sub}</small><b>${items.length}</b></h3>${items.length?items.map(fn).join(''):'<div class="rempty">— NINGUNA —</div>'}</div>`;
+  $('#rSide').innerHTML=
+    sec('EN FINAL','aproximación',Z.finals,t=>rItem(t,'final','FINAL '+etaTxt(hrsLeft(t))))+
+    sec('SOBRE EL CAMPO','vencidas',Z.overs,t=>rItem(t,'over',(t.pri===1?'7700 ':'')+'+'+etaTxt(hrsLeft(t))))+
+    sec('EN PLATAFORMA','sin fecha · esperando despegue',Z.parked,t=>rItem(t,isStale(t)?'stale':'',platDays(t)+'d',`<button type="button" class="rtko" data-tko="${esc(t.id)}" title="Iniciar la tarea (despegar)">✈</button>`))+
+    sec('SALIDAS','en curso sin fecha',Z.deps,t=>rItem(t,'dep','+'+etaTxt(depHours(t))))+
+    sec('EN ESPERA','circuito de espera',Z.holds,t=>rItem(t,'',t.due?etaTxt(hrsLeft(t)):'—'))+
+    sec('PRÓXIMAS LLEGADAS','por orden de plazo',Z.next.slice(0,10),t=>rItem(t,'',etaTxt(hrsLeft(t))))+
+    sec('ATERRIZADAS HOY','hechas',Z.landed,t=>rItem(t,'done','✓'))+
+    `<div class="rlegend">
+<b style="color:#b4ffcb">✈</b> Llegada en curso: vuela hacia la pista por la ruta de su área<br>
+<b style="color:#8fd9a6">✈ hueco</b> Llegada pendiente (con fecha, aún sin empezar)<br>
+<b style="color:#ffb000">✈</b> Aproximación final por el localizador LOC 27<br>
+<b style="color:#ff4d3d">✈</b> Vencida: orbita sobre el campo · 7700 = prioridad 1<br>
+<b style="color:#ffb000">◌</b> Circuito de espera (esperando a terceros)<br>
+<b style="color:#6fbf8a">✈</b> Aparcada en plataforma: sin fecha, sin iniciar<br>
+<b style="color:#55e6ff">✈</b> Parpadeo azul: demasiado tiempo en plataforma<br>
+<b style="color:#55e6ff">✈</b> Salida: tarea sin fecha iniciada, se aleja por la SID<br>
+Distancia al centro: en llegadas, tiempo hasta el plazo; en salidas, tiempo desde el despegue. ◯ = prioridad 1 · FL = avance.<br>
+Clic en un avión o en la lista: abrir la ficha · ✈: despegar.</div>`;
+}
+(function wireRadar(){
+  $('#btnRadar').onclick=openRadar;
+  $('#rClose').onclick=closeRadar;
+  $('#rRange').addEventListener('click',e=>{const b=e.target.closest('[data-r]');if(!b)return;RADAR.range=+b.dataset.r;try{localStorage.setItem('pepe-atc-radar-range',RADAR.range)}catch(_){}$$('#rRange button').forEach(x=>x.classList.toggle('on',x===b));buildRadarBg()});
+  const cv=$('#rCvs');
+  cv.addEventListener('pointerdown',e=>{RADAR.ptype=e.pointerType||'mouse'});
+  cv.addEventListener('pointermove',e=>{if(e.pointerType!=='mouse')return;const b=radarHit(e.offsetX,e.offsetY);cv.style.cursor=b?'pointer':'crosshair';showTip(b,e.offsetX,e.offsetY,false)});
+  cv.addEventListener('pointerleave',()=>{if(RADAR.ptype==='mouse')showTip(null)});
+  cv.addEventListener('click',e=>{
+    const b=radarHit(e.offsetX,e.offsetY);
+    if(!b){showTip(null);RADAR.tapId=null;return}
+    if(RADAR.ptype==='mouse'||RADAR.tapId===b.id){RADAR.tapId=null;showTip(null);openDb('edit',b.id)}
+    else{RADAR.tapId=b.id;showTip(b,e.offsetX,e.offsetY,true)}
+  });
+  const side=$('#rSide');
+  side.addEventListener('click',e=>{const tk=e.target.closest('[data-tko]');if(tk){e.stopPropagation();const t=byId(tk.dataset.tko);if(t){setStatus(t,'CURS');if(!t.start||t.start>todayISO())t.start=todayISO();persist()}return}const it=e.target.closest('.ritem');if(it)openDb('edit',it.dataset.id)});
+  side.addEventListener('mouseover',e=>{const it=e.target.closest('.ritem');RADAR.hl=it?it.dataset.id:null});
+  side.addEventListener('mouseleave',()=>{RADAR.hl=null});
+  if(window.ResizeObserver)new ResizeObserver(()=>{if(RADAR.open)sizeRadar()}).observe($('#rWrap'));
+  else window.addEventListener('resize',()=>{if(RADAR.open)sizeRadar()});
+})();
 
 /* =========================================================
    ARRANQUE
