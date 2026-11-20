@@ -324,7 +324,7 @@ select.f option{background:#aaaaaa;color:#000}
     </div>
     <div class="counters" id="counters"></div>
     <div class="spacer"></div>
-    <button class="sync" id="syncInd" type="button" title="Estado de la sincronización (clic para configurar)"><i></i><span>SÓLO LOCAL</span></button>
+    <button class="sync" id="syncInd" type="button" title="Sincronizar ahora"><i></i><span>SÓLO LOCAL</span></button><button class="sync" id="syncCfg" type="button" title="Configurar la sincronización">⚙</button>
     <button class="btn" id="btnRadar" type="button" title="Radar de aproximación (tecla R)">◎ Radar</button>
     <button class="btn" id="btnDb" type="button" title="Entrada de datos (tecla D)">⌨ Entrada dBASE</button>
     <button class="btn primary" id="btnNew" type="button" title="Nueva ficha (tecla N)">+ Ficha</button>
@@ -350,7 +350,7 @@ select.f option{background:#aaaaaa;color:#000}
     <span>✈ DESPEGAR: INICIAR UNA TAREA SIN FECHA</span>
     <span>· CLIC EN FICHA: EDITAR · ARRASTRAR O ▲▼: CAMBIAR DE BAHÍA · ✕ O SUPR: ELIMINAR (CTRL+Z DESHACE) · TECLAS N (NUEVA) · D (dBASE) · R (RADAR) · / (BUSCAR)</span>
   </footer>
-  <div id="toast" class="toast hidden" role="status"><span id="toastTxt"></span><button type="button" id="toastUndo">↶ DESHACER</button><button type="button" id="toastX" title="Cerrar">✕</button></div>
+  <div id="toast" class="toast hidden" role="status"><span id="toastTxt"></span><button type="button" id="toastUndo">↶ DESHACER</button><button type="button" id="toastAct" class="hidden"></button><button type="button" id="toastX" title="Cerrar">✕</button></div>
 </div>
 
 <!-- ======================= RADAR ======================= -->
@@ -479,7 +479,7 @@ Abriendo C:\PEPE\TAREAS.DBF …
 /* =========================================================
    CONSTANTES Y UTILIDADES
    ========================================================= */
-const VERSION='1.4';
+const VERSION='1.5';
 const LS_KEY='pepe-atc-db-v1', LS_SYNC='pepe-atc-sync-v1', LS_UI='pepe-atc-ui-v1';
 const STATUS=[
   {k:'PEND',bay:'EN PLATAFORMA',sub:'pendientes'},
@@ -743,7 +743,12 @@ function undoDelete(){
   persist();return g;
 }
 let toastTimer=null;
-function toast(text,undo){$('#toastTxt').textContent=text;$('#toastUndo').classList.toggle('hidden',!undo);$('#toast').classList.remove('hidden');clearTimeout(toastTimer);toastTimer=setTimeout(hideToast,undo?10000:4000)}
+let toastFn=null;
+function toast(text,undo,act){
+  $('#toastTxt').textContent=text;$('#toastUndo').classList.toggle('hidden',!undo);
+  const b=$('#toastAct');toastFn=act?act.fn:null;b.classList.toggle('hidden',!act);if(act)b.textContent=act.label;
+  $('#toast').classList.remove('hidden');clearTimeout(toastTimer);toastTimer=setTimeout(hideToast,(undo||act)?10000:4000);
+}
 function hideToast(){$('#toast').classList.add('hidden')}
 function boardUndo(){const g=undoDelete();if(!g){toast('No hay eliminaciones que deshacer',false);return}toast(g.length===1?`Ficha ${codeOf(g[0])} recuperada`:`${g.length} fichas recuperadas`,false);setTimeout(()=>focusStrip(g[0].id,true),30)}
 function boardDelete(t){
@@ -791,9 +796,11 @@ function focusStrip(id,flash){const s=document.querySelector(`.strip[data-id="${
   $('#staleDays').addEventListener('change',e=>{UI.stale=+e.target.value;saveUI();renderBoard()});
   $('#btnDb').onclick=()=>openDb();
   $('#btnNew').onclick=()=>openDb('new');
-  $('#syncInd').onclick=()=>openDb('sync');
+  $('#syncInd').onclick=async()=>{if(!syncReady())return openDb('sync');await syncNow(true);toast(SYNC.state==='ok'?'Sincronización correcta · '+hhmm(SYNC.last):'Error de sincronización: '+SYNC.err,false)};
+  $('#syncCfg').onclick=()=>openDb('sync');
   $('#toastUndo').onclick=boardUndo;
   $('#toastX').onclick=hideToast;
+  $('#toastAct').onclick=()=>{const f=toastFn;hideToast();if(f)f()};
 })();
 function boardKey(e){
   if(RADAR.open){if(e.key==='Escape'){e.preventDefault();closeRadar()}return}
@@ -805,7 +812,7 @@ function boardKey(e){
   if(tg.classList&&tg.classList.contains('strip')){
     const t=byId(tg.dataset.id);
     if(e.key==='Enter'){e.preventDefault();openDb('edit',t.id);return}
-    if(e.key==='Delete'||e.key==='Backspace'){e.preventDefault();boardDelete(t);return}
+    if(e.key==='Delete'){e.preventDefault();boardDelete(t);return}
     if(e.shiftKey&&(e.key==='ArrowDown'||e.key==='ArrowUp'||e.key==='ArrowRight'||e.key==='ArrowLeft')){e.preventDefault();moveTask(t,(e.key==='ArrowDown'||e.key==='ArrowRight')?1:-1);focusStrip(t.id,true);return}
   }
   const k=e.key.toLowerCase();
@@ -832,7 +839,7 @@ const F={area:$('#fArea'),title:$('#fTitle'),pri:$('#fPri'),status:$('#fStatus')
 const FIELD_ORDER=[F.area,F.title,F.pri,F.status,F.start,F.due,F.time,F.who,F.effort,F.progress,F.notes];
 const finePointer=matchMedia('(hover:hover) and (pointer:fine)').matches;
 const MODE_HINT={
-  edit:'RePág/AvPág: registro · F2: tabla · F3: nuevo · F5: grabar · F8: eliminar · F9: notas · F10: menú · Esc: panel',
+  edit:'F5 o Ctrl+S: grabar · Esc: grabar y volver al panel · RePág/AvPág: registro · F3: nuevo · F8: eliminar · F9: notas',
   browse:'↑↓: mover · Intro: editar · Espacio: marcar · Supr/F8: eliminar · Ctrl+Z: deshacer · Esc: panel',
   dot:'Escriba una orden y pulse Intro (HELP: lista de órdenes) · Esc: volver',
   areas:'F3: añadir área · F8: eliminar · F5: grabar · Esc: volver',
@@ -874,7 +881,17 @@ function closeDb(){
   $('#dbase').classList.add('hidden');$('#board').classList.remove('hidden');document.body.classList.remove('dos-on');
   renderBoard();
   if(RADAR.back){RADAR.back=false;openRadar();return}
-  if(DBS.cur)setTimeout(()=>focusStrip(DBS.cur,true),30);
+  if(DBS.cur){setTimeout(()=>focusStrip(DBS.cur,true),30);warnIfHidden(byId(DBS.cur))}
+}
+/* Avisa cuando la ficha recién grabada no se ve en el panel por algún filtro */
+function warnIfHidden(t){
+  if(!t||t.deleted||document.querySelector(`.strip[data-id="${CSS.escape(t.id)}"]`))return;
+  let why='';
+  if(UI.hidden.includes(t.area))why=`el área ${t.area} está oculta`;
+  else if(Q.trim())why='hay una búsqueda activa';
+  else if(t.status==='HECH')why=UI.showDone?'está aterrizada hace más de 14 días':'«Ver aterrizadas» está desactivado';
+  if(!why)return;
+  toast(`${codeOf(t)} está grabada, pero no se ve: ${why}`,false,{label:'MOSTRAR',fn:()=>{UI.hidden=[];Q='';$('#q').value='';if(t.status==='HECH')UI.showDone=true;saveUI();renderFilters();renderBoard();setTimeout(()=>focusStrip(t.id,true),30)}});
 }
 function showSplash(){
   const act=DB.tasks.filter(t=>!t.deleted&&t.status!=='HECH').length;
@@ -975,7 +992,7 @@ function saveRecord(manual){
 }
 function leaveRecord(){
   if(DBS.mode!=='edit')return true;
-  if(DBS.cur==='NEW'&&!F.title.value.trim()){DBS.cur=null;DBS.draft=null;DBS.dirty=false;return true}
+  if(DBS.cur==='NEW'&&!F.title.value.trim()){if(DBS.dirty)setTimeout(()=>msg('Alta descartada: faltaba el campo TAREA','err'),0);DBS.cur=null;DBS.draft=null;DBS.dirty=false;return true}
   if(DBS.dirty||DBS.cur==='NEW')return saveRecord(false);
   return true;
 }
@@ -1128,14 +1145,19 @@ function toggleBrowse(){
 }
 async function escapeKey(){
   if(DBS.mode==='edit'){
-    if(DBS.dirty){if(!(await ask('¿Abandonar los cambios de este registro? (S/N)')))return}
+    // Esc graba los cambios y vuelve al panel (para salir sin grabar: Salir › Abandonar cambios)
+    if(DBS.cur==='NEW'&&!F.title.value.trim()){
+      if(DBS.dirty&&!(await ask('La ficha nueva no tiene TAREA y no se puede grabar.\n¿Descartarla y volver al panel? (S/N)'))){F.title.focus();return}
+      return closeDb();
+    }
+    if((DBS.dirty||DBS.cur==='NEW')&&!saveRecord(false))return;
     return closeDb();
   }
   if(DBS.mode==='browse')return closeDb();
   if(DBS.mode==='areas'&&DBS.areasDirty){if(!(await ask('¿Abandonar los cambios en las áreas? (S/N)')))return}
   showMode(DBS.prevMode||'edit');
 }
-function saveAndExit(){if(DBS.mode==='edit'&&!leaveRecord())return;if(DBS.mode==='areas'&&DBS.areasDirty&&!saveAreas())return;closeDb()}
+function saveAndExit(){if(DBS.mode==='edit'){if(DBS.cur==='NEW'&&!F.title.value.trim()&&DBS.dirty){msg('** Falta el campo TAREA **','err');beep();F.title.focus();return}if(!leaveRecord())return}if(DBS.mode==='areas'&&DBS.areasDirty&&!saveAreas())return;closeDb()}
 
 /* ---------- Memo ---------- */
 function openMemo(){
@@ -1144,7 +1166,7 @@ function openMemo(){
   $('#memoHead').textContent=' Memo NOTAS · '+(DBS.cur==='NEW'?'registro nuevo':codeOf(r)+' · '+r.title);
   const ta=$('#memoTa');ta.value=r.notes||'';DBS.memoOrig=ta.value;
   $('#memo').classList.remove('hidden');DBS.modal='memo';
-  setTimeout(()=>ta.focus(),0);
+  ta.focus();
 }
 async function memoClose(save){
   const ta=$('#memoTa');
@@ -1156,6 +1178,7 @@ async function memoClose(save){
     setMemoView(ta.value);msg('Memo grabado','ok');
   }
   $('#memo').classList.add('hidden');DBS.modal=null;F.notes.focus();updateStatus();
+  if(save&&DBS.cur==='NEW'){if(F.title.value.trim())saveRecord(false);else msg('Memo guardado · escriba la TAREA y pulse F5 para grabar la ficha','err')}
 }
 function memoKey(e){
   if(e.key==='Escape'){e.preventDefault();memoClose(false)}
@@ -1200,8 +1223,9 @@ RePág / AvPág   Registro anterior / siguiente
 ↑ ↓  Intro      Moverse entre campos
 Espacio ← →     Cambiar valor en campos de lista
 Ins             Insertar / Sobrescribir
-Ctrl+Fin        Grabar y volver al panel
-Esc             Abandonar y volver al panel
+F5 · Ctrl+S · Ctrl+Intro   Grabar (en Mac: fn+F5 o Cmd+S)
+Esc · Ctrl+Fin  Grabar y volver al panel
+Salir › Abandonar cambios: salir sin grabar
 
 ELIMINAR FICHAS
   Edición: F8 o botón «Eliminar ficha»
@@ -1236,7 +1260,7 @@ const MENUS=[
   {t:'Organizar',items:[['Orden natural (nº registro)','',()=>setOrder('n')],['Ordenar por prioridad','',()=>setOrder('pri')],['Ordenar por fecha límite','',()=>setOrder('due')],['Ordenar por área','',()=>setOrder('area')],'-',['Mostrar todas las fichas','',()=>setFilter('all')],['Mostrar sólo fichas activas','',()=>setFilter('active')]]},
   {t:'Ir a',items:[['Primer registro','',()=>goEdge(false)],['Último registro','',()=>goEdge(true)],['Registro nº…','',goN],['Buscar texto…','F4',cmdSearch],'-',['Vista de edición','',()=>{if(DBS.mode!=='edit')showMode('edit')}],['Vista de tabla','F2',()=>{if(DBS.mode==='edit'&&!leaveRecord())return;showMode('browse')}]]},
   {t:'Utilidades',items:[['Indicador de punto (órdenes)','',()=>{if(DBS.mode==='edit'&&!leaveRecord())return;showMode('dot')}],['Configurar áreas','',()=>{if(DBS.mode==='edit'&&!leaveRecord())return;showMode('areas')}],['Sincronización (GitHub)…','',()=>{if(DBS.mode==='edit'&&!leaveRecord())return;showMode('sync')}],['Sincronizar ahora','',()=>syncNow(true)],'-',['Exportar copia de seguridad (JSON)','',exportJSON],['Importar copia de seguridad (JSON)','',importJSON],['Exportar a Excel (CSV)','',exportCSV]]},
-  {t:'Salir',items:[['Grabar y volver al panel','Ctrl+Fin',saveAndExit],['Abandonar cambios y volver','Esc',()=>{DBS.dirty=false;closeDb()}],'-',['Ayuda','F1',showHelp]]}];
+  {t:'Salir',items:[['Grabar y volver al panel','Esc',saveAndExit],['Abandonar cambios y volver','',async()=>{if(DBS.dirty&&!(await ask('¿Salir SIN grabar los cambios? (S/N)')))return;DBS.dirty=false;closeDb()}],'-',['Ayuda','F1',showHelp]]}];
 function renderMenubar(){$('#menubar').innerHTML=MENUS.map((m,i)=>`<button type="button" class="mi" data-i="${i}"><u>${m.t[0]}</u>${esc(m.t.slice(1))}</button>`).join('')+`<span class="mtitle">dTAREAS IV · v${VERSION}</span><span class="mclock" id="dClock"></span>`}
 function firstSel(i){return MENUS[i].items.findIndex(x=>x!=='-')}
 function openMenu(i){if(DBS.modal)return;DBS.menu={i,j:firstSel(i)};renderDdm()}
@@ -1456,7 +1480,7 @@ $('#vAreas').addEventListener('click',e=>{const b=e.target.closest('[data-a]');i
 /* =========================================================
    SINCRONIZACIÓN CON GITHUB (repositorio privado)
    ========================================================= */
-const SYNC={busy:false,again:false,last:0,state:'off',err:'',timer:null};
+const SYNC={busy:false,again:false,last:0,state:'off',err:'',timer:null,pending:false};
 function syncCfg(){try{return JSON.parse(localStorage.getItem(LS_SYNC))||{}}catch(e){return{}}}
 function syncReady(c){c=c||syncCfg();return !!(c.owner&&c.repo&&c.token&&c.path)}
 function slog(s){const el=$('#syncLog');const lines=(el.textContent?el.textContent.split('\n'):[]);lines.push(hhmm(now())+'  '+s);el.textContent=lines.slice(-30).join('\n');el.scrollTop=el.scrollHeight}
@@ -1494,7 +1518,7 @@ async function syncNow(manual){
   if(!syncReady(c)){setSync('off');if(manual)alertBox('La sincronización no está configurada. Vaya a Utilidades › Sincronización.','');return}
   if(SYNC.busy){SYNC.again=true;return}
   if(!navigator.onLine){SYNC.err='sin conexión';setSync('err');return}
-  SYNC.busy=true;setSync('busy');
+  SYNC.busy=true;SYNC.pending=false;clearTimeout(SYNC.timer);setSync('busy');
   try{
     for(let attempt=0;attempt<3;attempt++){
       const {sha,data}=await ghGet(c);
@@ -1514,7 +1538,7 @@ async function syncNow(manual){
     SYNC.busy=false;if(SYNC.again){SYNC.again=false;setTimeout(()=>syncNow(),400)}
   }
 }
-function scheduleSync(){const c=syncCfg();if(!syncReady(c)||c.auto===false)return;clearTimeout(SYNC.timer);SYNC.timer=setTimeout(()=>syncNow(),1500)}
+function scheduleSync(){const c=syncCfg();if(!syncReady(c)||c.auto===false)return;SYNC.pending=true;clearTimeout(SYNC.timer);SYNC.timer=setTimeout(()=>syncNow(),1500)}
 function renderSync(){
   const c=syncCfg();
   $('#sOwner').value=c.owner||'';$('#sRepo').value=c.repo||'';$('#sBranch').value=c.branch||'main';$('#sPath').value=c.path||'tareas.json';
@@ -1602,13 +1626,13 @@ function editKey(e){
 }
 document.addEventListener('keydown',e=>{
   if($('#dbase').classList.contains('hidden'))return boardKey(e);
-  if(DBS.splash){e.preventDefault();hideSplash();return}
+  if(DBS.splash)hideSplash(); // la pulsación no se pierde: sigue su curso normal
   if(DBS.modal==='dlg')return dlgKey(e);
   if(DBS.modal==='memo')return memoKey(e);
   if(DBS.menu)return menuKey(e);
   const k=e.key;
   if(/^F([1-9]|10)$/.test(k)){e.preventDefault();fkey(k);return}
-  if((e.ctrlKey||e.metaKey)&&(k==='s'||k==='S')){e.preventDefault();fkey('F5');return}
+  if((e.ctrlKey||e.metaKey)&&(k==='s'||k==='S'||k==='Enter')){e.preventDefault();fkey('F5');return}
   if(e.ctrlKey&&k==='End'){e.preventDefault();saveAndExit();return}
   if(e.ctrlKey&&k==='Home'){e.preventDefault();if(DBS.mode==='edit')openMemo();return}
   if(k==='Insert'){e.preventDefault();DBS.ins=!DBS.ins;updateStatus();return}
@@ -1907,7 +1931,11 @@ if(syncReady()&&syncCfg().auto!==false)syncNow();
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&syncReady()&&syncCfg().auto!==false&&now()-SYNC.last>30000)syncNow()});
 setInterval(()=>{if(document.visibilityState==='visible'&&syncReady()&&syncCfg().auto!==false)syncNow()},5*60*1000);
 window.addEventListener('online',()=>{if(syncReady())syncNow()});
-window.addEventListener('beforeunload',e=>{if(!$('#dbase').classList.contains('hidden')&&DBS.dirty){e.preventDefault();e.returnValue=''}});
+window.addEventListener('beforeunload',e=>{if(!$('#dbase').classList.contains('hidden')&&(DBS.dirty||(DBS.cur==='NEW'&&F.title.value.trim()))){e.preventDefault();e.returnValue=''}});
+/* Si la página se oculta (cambio de app, cierre de pestaña) con cambios aún sin enviar, se envían ya */
+function flushSync(){if(SYNC.pending&&syncReady()){clearTimeout(SYNC.timer);syncNow()}}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flushSync()});
+window.addEventListener('pagehide',flushSync);
 </script>
 </body>
 </html>
