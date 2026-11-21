@@ -551,6 +551,7 @@ select.f option{background:#aaaaaa;color:#000}
         <div class="dbtns">
           <button class="dbtn" type="button" data-g="save">&lt; F5 Guardar &gt;</button>
           <button class="dbtn" type="button" data-g="test">&lt; Probar el puente &gt;</button>
+          <button class="dbtn" type="button" data-g="open">&lt; Abrir prueba del puente en otra pestaña &gt;</button>
           <button class="dbtn" type="button" data-g="cals">&lt; Cargar mis calendarios &gt;</button>
           <button class="dbtn" type="button" data-g="newkey">&lt; Generar clave nueva &gt;</button>
           <button class="dbtn" type="button" data-g="seen">&lt; Volver a proponer descartados &gt;</button>
@@ -636,7 +637,7 @@ var __spreadValues = (a, b) => {
   return a;
 };
 var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
-const VERSION = "3.0";
+const VERSION = "3.1";
 const LS = (() => {
   try {
     const k = "__panel_test";
@@ -4241,13 +4242,13 @@ function jsonp(url) {
     sc.onerror = () => {
       if (!done) {
         end();
-        rej(new Error("No se pudo contactar con el puente"));
+        rej(Object.assign(new Error("No se pudo contactar con el puente. Causas habituales: (1) la URL no es la de la implementación actual (copie de nuevo la «URL de la aplicación web» que termina en /exec); (2) en la implementación, «Quién tiene acceso» no es «Cualquier usuario»; (3) no se completó la autorización; (4) la red de este equipo bloquea script.google.com. Use «Configuración › Abrir prueba del puente» para averiguarlo."), { diag: true }));
       }
     };
     sc.onload = () => setTimeout(() => {
       if (!done) {
         end();
-        rej(new Error("El puente respondió, pero no con datos: compruebe que en la implementación «Quién tiene acceso» es «Cualquier usuario»"));
+        rej(Object.assign(new Error("El puente respondió, pero no con datos: compruebe que en la implementación «Quién tiene acceso» es «Cualquier usuario», que guardó el código antes de implementarlo y que completó la autorización. Use «Configuración › Abrir prueba del puente»."), { diag: true }));
       }
     }, 800);
     sc.src = url + "&cb=" + cb;
@@ -4726,6 +4727,29 @@ function showBridgeCode() {
     const a = b.dataset.g;
     if (a === "save") return saveGoogle(true);
     if (a === "code") return showBridgeCode();
+    if (a === "open") {
+      if (!saveGoogle(false)) return;
+      const g = DB.google;
+      if (!g.url || !g.key) {
+        glog("Falta la URL o la clave del puente.");
+        return;
+      }
+      window.open(g.url + (g.url.includes("?") ? "&" : "?") + "op=ping&k=" + encodeURIComponent(g.key), "_blank", "noopener");
+      dialog({ kind: "alert", cls: "help wide", title: "¿QUÉ HA APARECIDO EN LA PESTAÑA NUEVA?", html: `<pre>• <b>{"ok":true,"user":"…"}</b>  → el puente funciona. Si el panel no conecta,
+  es este navegador o la red del equipo: pruebe en otro ordenador o en el móvil.
+• <b>{"ok":false,"error":"Clave incorrecta"}</b>  → la clave del panel no es la del
+  código implementado: copie de nuevo el código y cree una versión nueva
+  (Implementar › Gestionar implementaciones › ✎ Editar › Versión: Nueva versión).
+• <b>Página de inicio de sesión de Google</b>  → «Quién tiene acceso» no es
+  «Cualquier usuario». Cámbielo en Gestionar implementaciones › ✎ Editar.
+• <b>«Se necesita autorización» / «No se ha encontrado la función doGet»</b>
+  → abra el proyecto, guarde el código (disquete), pulse «Ejecutar», acepte
+  los permisos y cree una versión nueva de la implementación.
+• <b>«No se ha encontrado la página» / error 404</b>  → la URL no es la de la
+  implementación: copie la «URL de la aplicación web» (termina en /exec).
+• <b>La pestaña no carga</b>  → la red de este equipo bloquea Google Apps Script.</pre>` });
+      return;
+    }
     if (a === "newkey") {
       if ($("#gKey").value.trim() && !await ask("Si cambia la clave tendrá que pegar otra vez el código del puente en script.google.com y crear una versión nueva. ¿Generar clave nueva? (S/N)")) return;
       $("#gKey").value = newKey();
