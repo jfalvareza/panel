@@ -555,6 +555,7 @@ select.f option{background:#aaaaaa;color:#000}
           <button class="dbtn" type="button" data-g="cals">&lt; Cargar mis calendarios &gt;</button>
           <button class="dbtn" type="button" data-g="newkey">&lt; Generar clave nueva &gt;</button>
           <button class="dbtn" type="button" data-g="seen">&lt; Volver a proponer descartados &gt;</button>
+          <button class="dbtn" type="button" data-g="direct">&lt; Reintentar conexión directa &gt;</button>
         </div>
         <div class="hints">El puente es un pequeño programa que se pega en <b>script.google.com</b> dentro de su cuenta de Google: lee Gmail y Calendar (sólo lectura) y entrega los datos a este panel. Pulse «Ver y copiar el código del puente» y siga los pasos.</div>
         <pre id="gLog" class="slog"></pre>
@@ -637,7 +638,7 @@ var __spreadValues = (a, b) => {
   return a;
 };
 var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
-const VERSION = "3.1";
+const VERSION = "3.2";
 const LS = (() => {
   try {
     const k = "__panel_test";
@@ -4160,8 +4161,8 @@ function doGet(e) {
   let res;
   try {
     if (p.k !== CLAVE) res = { ok: false, error: 'Clave incorrecta' };
-    else if (p.op === 'ping') res = { ok: true, user: Session.getEffectiveUser().getEmail(), version: 1 };
-    else if (p.op === 'mail') res = { ok: true, user: Session.getEffectiveUser().getEmail(), items: correos(p.q || 'newer_than:30d', Number(p.max) || 50) };
+    else if (p.op === 'ping') res = { ok: true, user: Session.getEffectiveUser().getEmail(), version: 2 };
+    else if (p.op === 'mail') res = { ok: true, user: Session.getEffectiveUser().getEmail(), version: 2, items: correos(p.q || 'newer_than:30d', Number(p.max) || 50) };
     else if (p.op === 'cals') res = { ok: true, items: CalendarApp.getAllCalendars().map(c => ({ id: c.getId(), name: c.getName(), primary: c.isMyPrimaryCalendar() })) };
     else if (p.op === 'cal') res = { ok: true, items: eventos(p.id, Number(p.days) || 60) };
     else res = { ok: false, error: 'Operación desconocida' };
@@ -4169,6 +4170,16 @@ function doGet(e) {
     res = { ok: false, error: String((err && err.message) || err) };
   }
   const json = JSON.stringify(res);
+  if (p.mode === 'popup') {   // ventanita: devuelve los datos al panel que la abrió y se cierra
+    const rid = /^\\w{1,40}$/.test(p.rid || '') ? p.rid : '';
+    return HtmlService.createHtmlOutput(
+      '<p style="font:15px Arial,sans-serif;color:#333">Panel ATC · enviando datos al panel…</p>' +
+      '<script>var d=' + json.replace(/</g, '\\u003c') + ';' +
+      'try{(window.top.opener||window.opener).postMessage({__panelBridge:"' + rid + '",data:d},"*")}' +
+      'catch(e){document.body.innerHTML+="<p>No se pudo enviar. Cierre esta ventana.</p>"}' +
+      'setTimeout(function(){try{window.top.close()}catch(e){}},400)<\/script>'
+    ).setTitle('Panel ATC');
+  }
   if (p.cb && /^[\\w$]{1,40}$/.test(p.cb))
     return ContentService.createTextOutput(p.cb + '(' + json + ')').setMimeType(ContentService.MimeType.JAVASCRIPT);
   return ContentService.createTextOutput(json).setMimeType(ContentService.MimeType.JSON);
@@ -4255,6 +4266,61 @@ function jsonp(url) {
     document.head.appendChild(sc);
   });
 }
+const BMODE = "pepe-atc-bridge-mode";
+function bridgePopup(full) {
+  return new Promise((res, rej) => {
+    const rid = "r" + Math.random().toString(36).slice(2, 12);
+    const w = window.open(full + "&mode=popup&rid=" + rid, "panelPuente", "width=460,height=240,left=80,top=80");
+    if (!w) return rej(Object.assign(new Error("El navegador bloqueó la ventanita de Google: permita las ventanas emergentes de esta página (icono de la barra de direcciones) y pulse «Actualizar»."), { diag: true }));
+    let done = false;
+    const okOrigin = (o) => {
+      try {
+        const h = new URL(o).hostname;
+        return /(^|\.)googleusercontent\.com$/.test(h) || h === "script.google.com";
+      } catch (_) {
+        return false;
+      }
+    };
+    const onMsg = (ev) => {
+      const d = ev.data;
+      if (!d || d.__panelBridge !== rid || !okOrigin(ev.origin)) return;
+      done = true;
+      cleanup();
+      res(d.data);
+    };
+    const cleanup = () => {
+      window.removeEventListener("message", onMsg);
+      clearInterval(poll);
+      clearTimeout(tm);
+      clearTimeout(slow);
+      try {
+        w.close();
+      } catch (_) {
+      }
+    };
+    window.addEventListener("message", onMsg);
+    const poll = setInterval(() => {
+      let c = false;
+      try {
+        c = w.closed;
+      } catch (_) {
+      }
+      if (c && !done) {
+        cleanup();
+        rej(Object.assign(new Error('Se cerró la ventanita de Google antes de recibir los datos. Si en ella aparecía texto como {"ok":true…}, el código del puente es antiguo: actualícelo (Configuración › Ver y copiar el código del puente) y cree una versión nueva.'), { diag: true }));
+      }
+    }, 500);
+    const slow = setTimeout(() => {
+      if (!done) msg('Esperando a la ventanita de Google… (si muestra texto {"ok":true…}, actualice el código del puente)');
+    }, 9e3);
+    const tm = setTimeout(() => {
+      if (!done) {
+        cleanup();
+        rej(Object.assign(new Error("La ventanita de Google no devolvió datos. Actualice el código del puente (Configuración › Ver y copiar el código del puente) y cree una versión nueva de la implementación."), { diag: true }));
+      }
+    }, 9e4);
+  });
+}
 async function bridge(op, params, kind) {
   const g = DB.google, url = kind === "cal" && g.calUrl || g.url;
   if (!url) throw Object.assign(new Error("Falta la URL del puente de Google. Pulse «Configuración»."), { cfg: true });
@@ -4263,6 +4329,10 @@ async function bridge(op, params, kind) {
   const qs = Object.entries(Object.assign({ op, k: g.key }, params || {})).map(([a, b]) => a + "=" + encodeURIComponent(b)).join("&");
   const full = url + (url.includes("?") ? "&" : "?") + qs;
   let d = null;
+  if (LS.getItem(BMODE) === "popup") {
+    d = await bridgePopup(full);
+    return bridgeCheck(d);
+  }
   try {
     const r = await fetch(full, { redirect: "follow", credentials: "omit", cache: "no-store" });
     if (r.status === 404) throw Object.assign(new Error("La URL del puente no existe (¿copiada incompleta o implementación borrada?)"), { fatal: true });
@@ -4276,7 +4346,18 @@ async function bridge(op, params, kind) {
     if (e.fatal) throw e;
     d = null;
   }
-  if (!d) d = await jsonp(full);
+  if (!d) {
+    try {
+      d = await jsonp(full);
+    } catch (e) {
+      if (!e.diag) throw e;
+      LS.setItem(BMODE, "popup");
+      throw Object.assign(new Error("Este navegador no deja que el panel hable directamente con Google. A partir de ahora los datos se traerán con una ventanita de Google que se abre y se cierra sola: pulse «Actualizar» (o «Probar el puente»). Si el navegador avisa de una ventana emergente bloqueada, permítala."), { retry: true });
+    }
+  }
+  return bridgeCheck(d);
+}
+function bridgeCheck(d) {
   if (!d || !d.ok) {
     const er = d && d.error || "Error del puente";
     if (er === "Clave incorrecta") throw Object.assign(new Error("La clave no coincide con la del puente: copie de nuevo el código del puente en script.google.com e impleméntelo otra vez (Gestionar implementaciones › Editar › Nueva versión)."), { cfg: true });
@@ -4423,6 +4504,7 @@ async function impLoad(connect) {
     IMP.state = e.cfg ? "cfg" : "err";
     IMP.err = e.message;
     IMP.rows = [];
+    if (e.retry) IMP.state = "retry";
   }
   if (DBS.mode === "import" && IMP.kind === kind) renderImport();
 }
@@ -4430,6 +4512,7 @@ function renderImport() {
   const mail = IMP.kind !== "cal";
   let info = esc(IMP.info || "");
   if (IMP.state === "cfg") info = `<span class="err">${esc(IMP.err)}</span>`;
+  else if (IMP.state === "retry") info = `<span class="err">${esc(IMP.err)}</span>`;
   else if (IMP.state === "err") info = `<span class="err">** ${esc(IMP.err)} **</span>`;
   $("#impInfo").innerHTML = info;
   const head = mail ? "<th>INC</th><th>P</th><th>FECHA</th><th>DE</th><th>ASUNTO</th><th>LO QUE PIDE</th><th>FICHA PROPUESTA</th><th>ÁREA</th>" : "<th>INC</th><th>P</th><th>FECHA</th><th>HORA</th><th>EVENTO</th><th>DETALLE</th><th>FICHA PROPUESTA</th><th>ESTADO</th>";
@@ -4726,6 +4809,11 @@ function showBridgeCode() {
     if (!b) return;
     const a = b.dataset.g;
     if (a === "save") return saveGoogle(true);
+    if (a === "direct") {
+      LS.removeItem(BMODE);
+      glog("Se volverá a intentar la conexión directa (sin ventanita).");
+      return;
+    }
     if (a === "code") return showBridgeCode();
     if (a === "open") {
       if (!saveGoogle(false)) return;
@@ -4770,10 +4858,9 @@ function showBridgeCode() {
     if (!saveGoogle(false)) return;
     try {
       if (a === "test") {
-        glog("Probando el puente…");
-        const d = await bridge("ping", {}, "mail");
-        glog(`Puente correcto · cuenta ${d.user || "?"}`);
+        glog("Probando el puente…" + (LS.getItem(BMODE) === "popup" ? " (mediante ventanita)" : ""));
         const L = await bridge("mail", { q: mailQuery(), max: 60 }, "mail");
+        glog(`Puente correcto · cuenta ${L.user || "?"} · versión del puente ${L.version || 1}${(L.version || 1) < 2 ? " (antigua: actualice el código del puente)" : ""}`);
         glog(`Gmail: ${(L.items || []).length} correo(s) coinciden con la búsqueda.`);
         msg("Puente correcto", "ok");
       } else if (a === "cals") {
