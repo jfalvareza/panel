@@ -74,15 +74,35 @@ button{font-family:inherit}
 .empty.filt{color:#c9a24a}
 .toggle{font-size:11px;color:#9aa7b2;display:flex;align-items:center;gap:6px;letter-spacing:.1em;cursor:pointer;user-select:none}
 
-.bays{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:12px;padding:12px 16px 16px;align-items:start}
+.bays{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) minmax(0,1fr);grid-template-areas:"g1 g1 g1 esp" "ruta apro ater esp" "g2 g2 g2 esp" "plat vuel desp esp";gap:10px 12px;padding:10px 16px 16px;align-items:start}
+.grp{display:flex;align-items:baseline;gap:10px;font-size:12px;letter-spacing:.28em;color:#e8edf1;padding:6px 2px 2px;border-bottom:1px solid #3a434c}
+.grp small{font-size:10px;letter-spacing:.12em;color:#7d8a96}
+.grp.g1{grid-area:g1;border-bottom-color:#6e5310}.grp.g1::before{content:"▼";color:var(--amber)}
+.grp.g2{grid-area:g2;border-bottom-color:#1d5f86}.grp.g2::before{content:"▲";color:#55e6ff}
+.bay[data-s="RUTA"]{grid-area:ruta}.bay[data-s="APRO"]{grid-area:apro}.bay[data-s="ATER"]{grid-area:ater}
+.bay[data-s="PLAT"]{grid-area:plat}.bay[data-s="VUEL"]{grid-area:vuel}.bay[data-s="DESP"]{grid-area:desp}
+.bay[data-s="ESPE"]{grid-area:esp;align-self:stretch}
+@media (max-width:1699px){.bays{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-areas:"g1 g1 g1" "ruta apro ater" "g2 g2 g2" "plat vuel desp" "esp esp esp"}.bay[data-s="ESPE"]{align-self:start}}
+@media (max-width:999px){.bays{grid-template-columns:minmax(0,1fr);grid-template-areas:"g1" "ruta" "apro" "ater" "g2" "plat" "vuel" "desp" "esp"}}
+.rack{container-type:inline-size}
+@container (max-width:430px){.strip{grid-template-columns:22px 82px 58px minmax(0,1fr) 24px}.strip .c4{display:none}.strip.hasbtn{grid-template-columns:22px 80px 56px minmax(0,1fr) 44px 24px}.strip.hasbtn .c4{display:block;padding:4px 3px}}
+.sm.nolim{font-size:9px;letter-spacing:0}
+.strip.pressing{transform:scale(.97);transition:transform .3s ease-in}
+.strip.dragging{opacity:.3}
+.ghost{position:fixed!important;left:0;top:0;z-index:50;pointer-events:none;opacity:.93;box-shadow:0 14px 30px rgba(0,0,0,.75),0 0 0 2px var(--amber)!important;animation:none!important;transition:none!important}
+body.dragmode{cursor:grabbing;-webkit-user-select:none;user-select:none}
+body.dragmode .rack{outline:1px dashed rgba(255,176,0,.3);outline-offset:-4px}
+.strip{-webkit-user-drag:none}
 .bay{background:var(--panel);border:1px solid #000;box-shadow:inset 0 0 0 1px #2c343b;border-radius:3px;display:flex;flex-direction:column;min-width:0}
 .bay h2{margin:0;display:flex;align-items:baseline;gap:9px;padding:8px 10px 7px;background:linear-gradient(#3a434c,#2b3239);border-bottom:2px solid #000;font-size:13px;letter-spacing:.24em;color:#f1f4f6}
 .bay h2 small{font-size:10px;letter-spacing:.12em;color:#8e9ba6;font-weight:400}
 .bay h2 .n{margin-left:auto;font-family:var(--dos);font-weight:400;font-size:24px;line-height:.8;color:var(--amber)}
-.bay[data-s="PEND"] h2{box-shadow:inset 4px 0 0 #b9c3cc}
-.bay[data-s="CURS"] h2{box-shadow:inset 4px 0 0 var(--phos)}
-.bay[data-s="ESPE"] h2{box-shadow:inset 4px 0 0 var(--amber)}
-.bay[data-s="HECH"] h2{box-shadow:inset 4px 0 0 #5d6a75}
+.bay[data-s="RUTA"] h2{box-shadow:inset 4px 0 0 #b9c3cc}
+.bay[data-s="APRO"] h2{box-shadow:inset 4px 0 0 var(--amber)}
+.bay[data-s="ATER"] h2,.bay[data-s="DESP"] h2{box-shadow:inset 4px 0 0 #5d6a75}
+.bay[data-s="PLAT"] h2{box-shadow:inset 4px 0 0 #55e6ff}
+.bay[data-s="VUEL"] h2{box-shadow:inset 4px 0 0 var(--phos)}
+.bay[data-s="ESPE"] h2{box-shadow:inset 4px 0 0 #c77dff}
 .rack{flex:1;padding:8px;display:flex;flex-direction:column;gap:6px;min-height:150px;background:linear-gradient(90deg,#161a1f 0 6px,transparent 6px calc(100% - 6px),#161a1f calc(100% - 6px)),#20262c}
 .rack.over{outline:2px dashed var(--amber);outline-offset:-5px;background:#262d34}
 .empty{color:#56616b;font-size:11px;letter-spacing:.16em;text-align:center;padding:30px 0}
@@ -140,6 +160,8 @@ button{font-family:inherit}
 .strip.stale{animation:staleGlow 1.3s ease-in-out infinite}
 .tko{display:block;width:100%;margin-top:2px;border:1.5px solid #1d5f86;background:#dff2ff;color:#0e3d5a;font-family:var(--mono);font-size:8.5px;font-weight:700;letter-spacing:0;padding:2px 0;cursor:pointer;border-radius:2px;white-space:nowrap}
 .tko:hover{background:#1d5f86;color:#fff}
+.c4 .tko{font-size:8px;margin-top:3px}
+.c4 .sm{font-size:8.5px;letter-spacing:0;white-space:normal;line-height:1.2}
 .strip.stale .tko{background:#0e6f9e;color:#fff;border-color:#0e6f9e;animation:blink 1.3s steps(2) infinite}
 .tag.t-stale{color:#fff;background:#0e6f9e;border-color:#0e6f9e}
 .cnt.stale{border-color:#55e6ff;color:#bdf3ff;animation:cntBlink 1.3s steps(2) infinite}.cnt.stale b{color:#55e6ff}
@@ -155,6 +177,8 @@ button{font-family:inherit}
   .bays{padding:10px 8px}
   .strip{grid-template-columns:22px 82px 56px minmax(0,1fr) 26px}
   .strip .c4{display:none}
+  .strip.hasbtn{grid-template-columns:22px 80px 56px minmax(0,1fr) 44px 24px}
+  .strip.hasbtn .c4{display:block;padding:4px 3px}
   .search{width:100%}
 }
 
@@ -340,8 +364,10 @@ select.f option{background:#aaaaaa;color:#000}
   <nav class="filters">
     <div id="chips" class="chips"></div>
     <div class="qwrap"><input id="q" class="search" type="text" placeholder="BUSCAR INDICATIVO / TEXTO" autocomplete="off" spellcheck="false" enterkeyhint="search"><button type="button" id="qClear" class="qclear hidden" title="Borrar la búsqueda (Esc)">✕</button></div>
-    <label class="toggle"><input type="checkbox" id="showDone"> VER ATERRIZADAS</label>
-    <label class="toggle" title="Cuántos días antes del plazo empieza a parpadear la ficha">APROX. FINAL
+    <label class="toggle"><input type="checkbox" id="showDone"> VER CONCLUIDAS</label>
+    <label class="toggle" title="Las fichas con fecha límite pasan de «En ruta» a «En aproximación» cuando faltan estos días o menos">APROXIMACIÓN
+      <select id="appWin" class="appsel"><option value="3">3 DÍAS</option><option value="5">5 DÍAS</option><option value="7">7 DÍAS</option><option value="10">10 DÍAS</option><option value="14">14 DÍAS</option></select></label>
+    <label class="toggle" title="Cuántos días antes del plazo empieza a parpadear la ficha (aproximación final)">PARPADEO FINAL
       <select id="appDays" class="appsel"><option value="0">EL MISMO DÍA</option><option value="1">1 DÍA ANTES</option><option value="2">2 DÍAS ANTES</option><option value="3">3 DÍAS ANTES</option><option value="5">5 DÍAS ANTES</option><option value="7">7 DÍAS ANTES</option></select></label>
     <label class="toggle" title="Las fichas sin fecha que lleven este tiempo en plataforma sin despegar parpadean en azul">PARPADEO EN PLATAFORMA
       <select id="staleDays" class="appsel"><option value="1">1 DÍA</option><option value="3">3 DÍAS</option><option value="7">7 DÍAS</option><option value="14">14 DÍAS</option><option value="30">30 DÍAS</option></select></label>
@@ -356,8 +382,7 @@ select.f option{background:#aaaaaa;color:#000}
     <span><i style="background:var(--red)"></i>VENCIDA</span>
     <span><i style="background:var(--amber)"></i>APROXIMACIÓN FINAL (PARPADEA)</span>
     <span><i style="background:#55e6ff"></i>DEMASIADO TIEMPO EN PLATAFORMA (PARPADEA)</span>
-    <span>✈ DESPEGAR: INICIAR UNA TAREA SIN FECHA</span>
-    <span>· CLIC EN FICHA: EDITAR · ARRASTRAR O ▲▼: CAMBIAR DE BAHÍA · ✕ O SUPR DOS VECES: ELIMINAR (CTRL+Z DESHACE) · TECLAS N (NUEVA) · D (dBASE) · R (RADAR)</span>
+    <span>· MANTENER PULSADA LA FICHA Y ARRASTRARLA: CAMBIAR DE BAHÍA · CLIC: EDITAR · ✈ DESPEGAR / ▶ INICIAR · ✓ CONCLUIR · ‖ ESPERA · ↺ REABRIR · ✕ ELIMINAR (CTRL+Z DESHACE) · TECLAS N (NUEVA) · D (dBASE) · R (RADAR)</span>
   </footer>
   <div id="toast" class="toast hidden" role="status"><span id="toastTxt"></span><button type="button" id="toastUndo">↶ DESHACER</button><button type="button" id="toastAct" class="hidden"></button><button type="button" id="toastX" title="Cerrar">✕</button></div>
 </div>
@@ -391,7 +416,8 @@ select.f option{background:#aaaaaa;color:#000}
         <div class="frow"><label class="lab" for="fPri">Prioridad</label><select id="fPri" class="f" data-k="pri">
           <option value="1">1 URGENTE</option><option value="2">2 ALTA</option><option value="3">3 NORMAL</option><option value="4">4 BAJA</option></select></div>
         <div class="frow"><label class="lab" for="fStatus">Estado</label><select id="fStatus" class="f" data-k="status">
-          <option value="PEND">PEND En plataforma (pendiente)</option><option value="CURS">CURS En vuelo (en curso)</option><option value="ESPE">ESPE En espera (de terceros)</option><option value="HECH">HECH Aterrizada (hecha)</option></select></div>
+          <option value="PEND">PEND Sin iniciar</option><option value="CURS">CURS Iniciada (en curso)</option><option value="ESPE">ESPE En espera de terceros</option><option value="HECH">HECH Concluida</option></select></div>
+        <div class="frow"><span class="lab">Bahía del panel</span><span id="fBay" class="ro"></span><span class="aux" id="fBayHint"></span></div>
         <div class="frow"><label class="lab" for="fStart">F. inicio</label><input id="fStart" class="f date" data-k="start" style="width:11ch" autocomplete="off" placeholder="dd/mm/aaaa"><label class="lab2" for="fDue">F. límite</label><input id="fDue" class="f date" data-k="due" style="width:11ch" autocomplete="off" placeholder="dd/mm/aaaa"><label class="lab2" for="fTime">Hora</label><input id="fTime" class="f" data-k="time" style="width:6ch" autocomplete="off" placeholder="--:--" inputmode="numeric"></div>
         <div class="frow"><label class="lab" for="fWho">Persona</label><input id="fWho" class="f" data-k="who" maxlength="60" style="width:34ch" autocomplete="off"></div>
         <div class="frow"><label class="lab" for="fEffort">Esfuerzo (h)</label><input id="fEffort" class="f" data-k="effort" style="width:6ch" inputmode="decimal" autocomplete="off"><label class="lab2" for="fProg">Avance %</label><input id="fProg" class="f" data-k="progress" style="width:4ch" inputmode="numeric" autocomplete="off"></div>
@@ -488,7 +514,7 @@ Abriendo C:\PEPE\TAREAS.DBF …
 /* =========================================================
    CONSTANTES Y UTILIDADES
    ========================================================= */
-const VERSION='1.6';
+const VERSION='2.0';
 const LS_KEY='pepe-atc-db-v1', LS_SYNC='pepe-atc-sync-v1', LS_UI='pepe-atc-ui-v1';
 const STATUS=[
   {k:'PEND',bay:'EN PLATAFORMA',sub:'pendientes'},
@@ -640,7 +666,7 @@ function applyMerged(m){
 /* =========================================================
    PREFERENCIAS DE INTERFAZ
    ========================================================= */
-function loadUI(){let u={};try{u=JSON.parse(localStorage.getItem(LS_UI))||{}}catch(e){}return{hidden:Array.isArray(u.hidden)?u.hidden:[],showDone:u.showDone!==false,order:u.order||'n',filter:u.filter||'all',lastArea:u.lastArea||'',approach:[0,1,2,3,5,7].includes(u.approach)?u.approach:2,stale:[1,3,7,14,30].includes(u.stale)?u.stale:7}}
+function loadUI(){let u={};try{u=JSON.parse(localStorage.getItem(LS_UI))||{}}catch(e){}return{hidden:Array.isArray(u.hidden)?u.hidden:[],showDone:u.showDone!==false,order:u.order||'n',filter:u.filter||'all',lastArea:u.lastArea||'',approach:[0,1,2,3,5,7].includes(u.approach)?u.approach:2,appDays:[3,5,7,10,14].includes(u.appDays)?u.appDays:7,stale:[1,3,7,14,30].includes(u.stale)?u.stale:7}}
 const UI=loadUI();
 let Q='';
 function saveUI(){try{localStorage.setItem(LS_UI,JSON.stringify(UI))}catch(e){}}
@@ -648,70 +674,144 @@ function saveUI(){try{localStorage.setItem(LS_UI,JSON.stringify(UI))}catch(e){}}
 /* =========================================================
    PANEL DE FICHAS (salida)
    ========================================================= */
-/* Fase de vuelo según el plazo: 'over' (vencida), 'final' (aproximación final) o null */
+/* Bahías: LLEGADAS (con fecha límite), SALIDAS (sin fecha) y EN ESPERA */
+const BAYS=[
+  {k:'RUTA',name:'EN RUTA'},
+  {k:'APRO',name:'EN APROXIMACIÓN'},
+  {k:'ATER',name:'ATERRIZADAS',sub:'concluidas · 14 días'},
+  {k:'PLAT',name:'EN PLATAFORMA',sub:'sin iniciar'},
+  {k:'VUEL',name:'EN VUELO',sub:'iniciadas, sin concluir'},
+  {k:'DESP',name:'DESPEGADAS',sub:'concluidas · 14 días'},
+  {k:'ESPE',name:'EN ESPERA',sub:'pendientes de terceros'}];
+const BAYNAME=Object.fromEntries(BAYS.map(b=>[b.k,b.name]));
+const BAYSHORT={RUTA:'RUTA',APRO:'APROX',ATER:'ATERR',PLAT:'PLATAF',VUEL:'VUELO',DESP:'DESPEG',ESPE:'ESPERA'};
+/* Bahía que corresponde a una ficha según su estado y su fecha límite */
+function bayFor(status,due){
+  if(status==='ESPE')return 'ESPE';
+  if(!due)return status==='HECH'?'DESP':status==='CURS'?'VUEL':'PLAT';
+  if(status==='HECH')return 'ATER';
+  return daysUntil(due)<=UI.appDays?'APRO':'RUTA';
+}
+const bayOf=t=>bayFor(t.status,t.due);
+/* Fase según el plazo: 'over' (vencida), 'final' (parpadeo de aproximación final) o null */
 function phase(t){
   if(!t.due||t.status==='HECH'||t.deleted)return null;
   const d=daysUntil(t.due);
   if(d<0)return 'over';
   if(d===0&&t.time){const n=new Date();if(pad(n.getHours())+':'+pad(n.getMinutes())>t.time)return 'over'}
-  if(d<=UI.approach)return 'final';
+  if(d<=Math.min(UI.approach,UI.appDays))return 'final';
   return null;
 }
-/* Tiempo en plataforma (tareas pendientes sin fecha) y tiempo desde el despegue */
+/* Tiempo en plataforma (tareas sin fecha no iniciadas) y tiempo desde el despegue */
 function platRef(t){let ref=t.createdAt>1?t.createdAt:0;if(t.start){const [y,m,d]=t.start.split('-').map(Number);ref=Math.max(ref,new Date(y,m-1,d).getTime())}return ref||t.updatedAt||now()}
 function platDays(t){return Math.max(0,Math.floor((now()-platRef(t))/864e5))}
-function isStale(t){return !t.deleted&&t.status==='PEND'&&!t.due&&platDays(t)>=UI.stale}
+function isStale(t){return !t.deleted&&bayOf(t)==='PLAT'&&platDays(t)>=UI.stale}
 function depHours(t){let ref=t.startedAt;if(!ref&&t.start){const [y,m,d]=t.start.split('-').map(Number);ref=new Date(y,m-1,d,8).getTime()}return Math.max(0,(now()-(ref||t.updatedAt||now()))/36e5)}
-function takeoff(t){if(!t)return;setStatus(t,'CURS');if(!t.start||t.start>todayISO())t.start=todayISO();persist();toast(`✈ ${codeOf(t)} despegando`,false);setTimeout(()=>focusStrip(t.id,true),30)}
+const fmtDM=ts=>{const d=new Date(ts);return pad(d.getDate())+'/'+pad(d.getMonth()+1)};
+const DRAG={id:null,el:null,pid:null,type:'',sx:0,sy:0,x:0,y:0,timer:0,active:false,ghost:null,ox:0,oy:0,over:null,suppress:false,scrollT:0,pendingRender:false};
+function setStatus(t,k){
+  const was=t.status;if(was===k)return;
+  t.status=k;
+  if(k==='CURS'&&!t.startedAt)t.startedAt=now();
+  if(k==='PEND')t.startedAt=0;
+  if(k==='HECH'){t.doneAt=now();t.progress=100}
+  else{t.doneAt=0;if(was==='HECH'&&t.progress===100)t.progress=90}
+  t.updatedAt=now();
+}
+function announce(t,extra){persist();toast(`${codeOf(t)} → ${BAYNAME[bayOf(t)]}${extra||''}`,false);setTimeout(()=>focusStrip(t.id,true),30)}
+function takeoff(t){if(!t)return;setStatus(t,'CURS');if(!t.start||t.start>todayISO())t.start=todayISO();persist();toast(`✈ ${codeOf(t)} despegando → EN VUELO`,false);setTimeout(()=>focusStrip(t.id,true),30)}
+function doAct(t,act){
+  if(act==='start'){if(!t.due)return takeoff(t);setStatus(t,'CURS');if(!t.start||t.start>todayISO())t.start=todayISO();return announce(t,' · iniciada')}
+  if(act==='done'){setStatus(t,'HECH');return announce(t)}
+  if(act==='reopen'||act==='resume'){setStatus(t,t.startedAt?'CURS':'PEND');return announce(t)}
+  if(act==='hold'){setStatus(t,'ESPE');return announce(t)}
+}
+/* Soltar una ficha en otra bahía: se ajustan estado y, si hace falta, la fecha límite */
+function dropTo(t,key){
+  if(!t||!BAYNAME[key]||bayOf(t)===key)return;
+  const code=codeOf(t);let extra='';
+  if(key==='ESPE')setStatus(t,'ESPE');
+  else if(key==='PLAT'||key==='VUEL'){
+    if(t.due){
+      if(!confirm(`${code} tiene fecha límite (${fmtDate(t.due)}).\n«${BAYNAME[key]}» es para tareas SIN fecha límite.\n\n¿Quitar la fecha límite y moverla?`))return;
+      t.due='';t.time='';
+    }
+    setStatus(t,key==='PLAT'?'PEND':'CURS');
+    if(key==='VUEL'&&(!t.start||t.start>todayISO()))t.start=todayISO();
+  }
+  else if(key==='ATER'||key==='DESP'){
+    setStatus(t,'HECH');
+    if(key==='DESP'&&t.due)extra=' (tiene fecha límite)';
+    if(key==='ATER'&&!t.due)extra=' (no tiene fecha límite)';
+  }
+  else if(key==='RUTA'||key==='APRO'){
+    const fits=t.due&&bayFor('PEND',t.due)===key;
+    if(!fits){
+      const def=fmtDate(addDays(key==='APRO'?Math.min(3,UI.appDays):UI.appDays+7));
+      const ask=t.due?`${code}: con su fecha límite (${fmtDate(t.due)}) no le corresponde «${BAYNAME[key]}».\nIndique la nueva fecha límite (dd/mm/aaaa, +10, viernes…):`
+                     :`${code} no tiene fecha límite.\nPara pasarla a «${BAYNAME[key]}» indique la fecha límite (dd/mm/aaaa, +10, viernes…):`;
+      const v=prompt(ask,def);if(v===null)return;
+      const iso=parseDateInput(v);if(!iso){alert('Fecha no válida. No se ha movido la ficha.');return}
+      t.due=iso;
+      if(bayFor('PEND',iso)!==key)extra=' (por su fecha límite)';
+    }
+    if(t.status==='HECH'||t.status==='ESPE')setStatus(t,t.startedAt?'CURS':'PEND');
+  }
+  t.updatedAt=now();announce(t,extra);
+}
 function renderFilters(){
   $('#chips').innerHTML=`<button type="button" class="chip all" data-a="*">TODAS</button>`+
     DB.areas.map(a=>`<button type="button" class="chip ${UI.hidden.includes(a.code)?'off':''}" data-a="${esc(a.code)}" style="--ac:${col(a.color)}" title="${esc(a.name)}">${esc(a.code)}</button>`).join('');
   $('#showDone').checked=UI.showDone;
+  $('#appWin').value=String(UI.appDays);
   $('#appDays').value=String(UI.approach);
   $('#staleDays').value=String(UI.stale);
 }
 function stripHTML(t){
-  const a=areaOf(t.area), done=t.status==='HECH', d=t.due?daysUntil(t.due):null;
-  const ph=phase(t);
-  let cls='strip p'+t.pri; if(done)cls+=' done'; else if(ph)cls+=' '+ph; else if(isStale(t))cls+=' stale';
-  let eta='——', dow='ETA', tag='<span class="sm">SIN LÍMITE</span>';
+  const a=areaOf(t.area),done=t.status==='HECH',d=t.due?daysUntil(t.due):null,ph=phase(t);
+  let cls='strip p'+t.pri;if(done)cls+=' done';else if(ph)cls+=' '+ph;else if(isStale(t))cls+=' stale';
+  if(!done&&t.status==='PEND'&&t.due)cls+=' hasbtn';
+  let dow,eta,tag;
   if(t.due){
     const [y,m,dd]=t.due.split('-');
-    dow=(t.time?t.time+' ':'ETA ')+DOW[new Date(+y,+m-1,+dd).getDay()];
-    eta=`${dd}/${m}`;
-    if(done)tag=`<span class="sm">${t.time||'&nbsp;'}</span>`;
+    dow=(t.time?t.time+' ':'ETA ')+DOW[new Date(+y,+m-1,+dd).getDay()];eta=`${dd}/${m}`;
+    if(done)tag=`<span class="sm">ATERRIZÓ ${t.doneAt?fmtDM(t.doneAt):''}</span>`;
     else if(ph==='over')tag=d<0?`<span class="tag t-over">VENC +${-d}d</span>`:`<span class="tag t-over">VENC ${t.time}</span>`;
     else if(ph==='final')tag=`<span class="tag t-final">FINAL·${d===0?'HOY':d+'d'}</span>`;
-    else if(d===0)tag=`<span class="tag t-today">HOY ${t.time||''}</span>`;
     else if(d===1)tag=`<span class="tag t-today">MAÑANA</span>`;
     else tag=`<span class="tag">T-${d}d</span>`;
-  }
-  if(!t.due&&!done){
-    if(t.status==='PEND'){const pd=platDays(t);dow='EN PLATAF.';eta=pd+'d';tag=`<button type="button" class="tko" data-tko="1" title="Iniciar la tarea: pasa a «En vuelo»">✈ DESPEGAR</button>`}
-    else if(t.status==='CURS'){const e=depHours(t);dow='DESPEGÓ';eta=e<24?'HOY':'+'+Math.floor(e/24)+'d';tag='<span class="sm">SIN LÍMITE</span>'}
-  }
-  const si=SKEYS.indexOf(t.status);
+  }else if(done){dow='DESPEGÓ';eta=t.doneAt?fmtDM(t.doneAt):'✓';tag='<span class="sm">CONCLUIDA</span>'}
+  else if(t.status==='CURS'){const e=depHours(t);dow='EN VUELO';eta=e<24?'HOY':'+'+Math.floor(e/24)+'d';tag='<span class="sm nolim">SIN FECHA</span>'}
+  else if(t.status==='PEND'){dow='EN PLATAF.';eta=platDays(t)+'d';tag=`<button type="button" class="tko" data-act="start" title="Iniciar la tarea: pasa a «En vuelo»">✈ DESPEGAR</button>`}
+  else{dow='SIN FECHA';eta='——';tag='<span class="sm nolim">EN ESPERA</span>'}
   const note=(t.notes||'').split('\n').find(l=>l.trim())||'';
   const fl=pad(Math.round((t.progress||0)*3.5),3);
-  const tip=`${codeOf(t)} · ${a.name}\n${t.title}${t.who?'\n→ '+t.who:''}${t.due?'\nLímite: '+fmtDate(t.due)+(t.time?' '+t.time:''):''}\nAvance: ${t.progress}%${t.notes?'\n\n'+t.notes:''}`;
-  return `<div class="${cls}" data-id="${esc(t.id)}" draggable="true" tabindex="0" style="--ac:${col(a.color)}" title="${esc(tip)}">
+  const c4=(!done&&t.status==='PEND'&&t.due)
+    ?`<div class="lbl">ESTADO</div><div class="sm">SIN INICIAR</div><button type="button" class="tko" data-act="start" title="Iniciar la tarea">▶ INIC.</button>`
+    :`<div class="lbl">FL</div><div class="big">${fl}</div><div class="bar"><i style="width:${t.progress||0}%"></i></div><div class="lbl">${t.progress||0}%</div>`;
+  const b1=done?`<button type="button" data-act="reopen" title="Reabrir: volver a marcarla como no concluida">↺</button>`:`<button type="button" data-act="done" title="Concluir la tarea">✓</button>`;
+  const b2=t.status==='ESPE'?`<button type="button" data-act="resume" title="Sacar de espera">▶</button>`:`<button type="button" data-act="hold" title="Poner en espera (pendiente de terceros)" ${done?'disabled':''}>‖</button>`;
+  const tip=`${codeOf(t)} · ${a.name} · ${BAYNAME[bayOf(t)]}\n${t.title}${t.who?'\n→ '+t.who:''}${t.due?'\nLímite: '+fmtDate(t.due)+(t.time?' '+t.time:''):'\nSin fecha límite'}\nAvance: ${t.progress}%${t.notes?'\n\n'+t.notes:''}\n\n(Mantenga pulsada la ficha y arrástrela para cambiarla de bahía)`;
+  return `<div class="${cls}" data-id="${esc(t.id)}" tabindex="0" style="--ac:${col(a.color)}" title="${esc(tip)}">
 <div class="holder"><span>${esc(a.code)}</span></div>
 <div class="c1"><div class="cs">${esc(codeOf(t))}</div><div class="sm"><b>P${t.pri}</b> ${PRI[t.pri]}</div><div class="sm">${t.who?'→ '+esc(t.who):'&nbsp;'}</div></div>
 <div class="c2"><div class="lbl">${dow}</div><div class="big">${eta}</div>${tag}</div>
 <div class="c3"><div class="route">${esc(t.title)}</div>${note?`<div class="hand">${esc(note)}</div>`:''}</div>
-<div class="c4"><div class="lbl">FL</div><div class="big">${fl}</div><div class="bar"><i style="width:${t.progress||0}%"></i></div><div class="lbl">${t.progress||0}%</div></div>
-<div class="ctl"><button type="button" data-mv="1" title="Avanzar a la bahía siguiente" ${si===3?'disabled':''}>▼</button><button type="button" data-mv="-1" title="Volver a la bahía anterior" ${si===0?'disabled':''}>▲</button><button type="button" class="del" data-del="1" title="Eliminar ficha (Supr)">✕</button></div>
+<div class="c4">${c4}</div>
+<div class="ctl">${b1}${b2}<button type="button" class="del" data-del="1" title="Eliminar ficha (Supr dos veces)">✕</button></div>
 </div>`;
 }
 function renderBoard(){
+  if(DRAG.active){DRAG.pendingRender=true;return}
   const live=DB.tasks.filter(t=>!t.deleted);
   const active=live.filter(t=>t.status!=='HECH');
   const overdue=active.filter(t=>phase(t)==='over').length;
   const fin=active.filter(t=>phase(t)==='final').length;
+  const napp=active.filter(t=>bayOf(t)==='APRO').length;
   const stl=active.filter(isStale).length;
   const today=active.filter(t=>t.due&&daysUntil(t.due)===0).length;
   const urg=active.filter(t=>t.pri===1).length;
-  $('#counters').innerHTML=`<span class="cnt">TRÁFICO<b>${active.length}</b></span><span class="cnt ${urg?'alert':''}">URG<b>${urg}</b></span><span class="cnt ${overdue?'alert':''}">VENCIDAS<b>${overdue}</b></span><span class="cnt ${fin?'final':''}" title="Fichas en aproximación final">APROX<b>${fin}</b></span><span class="cnt ${today?'warn':''}">HOY<b>${today}</b></span><span class="cnt ${stl?'stale':''}" title="Fichas sin fecha que llevan mucho tiempo en plataforma">PLAT<b>${stl}</b></span>`;
+  $('#counters').innerHTML=`<span class="cnt">TRÁFICO<b>${active.length}</b></span><span class="cnt ${urg?'alert':''}">URG<b>${urg}</b></span><span class="cnt ${overdue?'alert':''}">VENCIDAS<b>${overdue}</b></span><span class="cnt" title="Fichas en aproximación">APROX<b>${napp}</b></span><span class="cnt ${fin?'final':''}" title="Aproximación final (parpadeo)">FINAL<b>${fin}</b></span><span class="cnt ${today?'warn':''}">HOY<b>${today}</b></span><span class="cnt ${stl?'stale':''}" title="Fichas que llevan mucho tiempo en plataforma">PLAT<b>${stl}</b></span>`;
   const q=Q.trim().toLowerCase();
   const vis=t=>!UI.hidden.includes(t.area)&&(!q||(codeOf(t)+' '+t.title+' '+t.who+' '+t.notes).toLowerCase().includes(q));
   const cutoff=now()-14*864e5;
@@ -726,23 +826,27 @@ function renderBoard(){
     fb.classList.remove('hidden');
   }else fb.classList.add('hidden');
   $('#q').classList.toggle('on',!!Q);$('#qClear').classList.toggle('hidden',!Q);
-  $('#bays').innerHTML=STATUS.filter(s=>s.k!=='HECH'||UI.showDone).map(s=>{
-    const nh=hiddenBy.filter(t=>t.status===s.k).length;
-    let list=live.filter(t=>t.status===s.k&&vis(t));
-    if(s.k==='HECH')list=list.filter(t=>(t.doneAt||t.updatedAt)>=cutoff).sort((a,b)=>(b.doneAt||b.updatedAt)-(a.doneAt||a.updatedAt)).slice(0,40);
-    else list.sort(taskSort);
-    return `<section class="bay" data-s="${s.k}"><h2>${s.bay}<small>${s.sub}</small><span class="n">${list.length}</span>${s.k==='HECH'&&list.length?'<button type="button" class="baybtn" data-clear="HECH" title="Eliminar todas las fichas aterrizadas visibles">VACIAR</button>':''}</h2><div class="rack" data-s="${s.k}">${list.map(stripHTML).join('')||(nh?`<div class="empty filt">— ${nh} OCULTA(S) POR EL FILTRO —</div>`:'<div class="empty">— SIN TRÁFICO —</div>')}</div></section>`;
-  }).join('');
+  const by={},hid={};BAYS.forEach(b=>{by[b.k]=[];hid[b.k]=0});
+  live.forEach(t=>{if(!inWin(t))return;const k=bayOf(t);if(vis(t))by[k].push(t);else hid[k]++});
+  const doneSort=(x,y)=>(y.doneAt||y.updatedAt)-(x.doneAt||x.updatedAt);
+  const dueSort=(x,y)=>dueKey(x).localeCompare(dueKey(y))||x.pri-y.pri||x.n-y.n;
+  by.RUTA.sort(dueSort);by.APRO.sort(dueSort);by.ESPE.sort(taskSort);by.VUEL.sort(taskSort);
+  by.PLAT.sort((x,y)=>x.pri-y.pri||platRef(x)-platRef(y));
+  by.ATER=by.ATER.sort(doneSort).slice(0,40);by.DESP=by.DESP.sort(doneSort).slice(0,40);
+  const subs={RUTA:`faltan más de ${UI.appDays} días`,APRO:`${UI.appDays} días o menos`};
+  const bayHTML=k=>{
+    const b=BAYS.find(x=>x.k===k),list=by[k],concl=(k==='ATER'||k==='DESP');
+    let body;
+    if(concl&&!UI.showDone)body=`<div class="empty">— ${list.length} OCULTA(S) · ACTIVE «VER CONCLUIDAS» —</div>`;
+    else body=list.map(stripHTML).join('')||(hid[k]?`<div class="empty filt">— ${hid[k]} OCULTA(S) POR EL FILTRO —</div>`:'<div class="empty">— SIN TRÁFICO —</div>');
+    const clr=concl&&UI.showDone&&list.length?`<button type="button" class="baybtn" data-clear="${k}" title="Eliminar todas las fichas concluidas visibles de esta bahía">VACIAR</button>`:'';
+    return `<section class="bay" data-s="${k}"><h2>${b.name}<small>${subs[k]||b.sub}</small><span class="n">${concl&&!UI.showDone?'–':list.length}</span>${clr}</h2><div class="rack" data-s="${k}">${body}</div></section>`;
+  };
+  $('#bays').innerHTML=
+    `<div class="grp g1">LLEGADAS <small>tareas con fecha límite · aterrizan al concluir</small></div>`+['RUTA','APRO','ATER'].map(bayHTML).join('')+
+    `<div class="grp g2">SALIDAS <small>tareas sin fecha límite · despegan al concluir</small></div>`+['PLAT','VUEL','DESP'].map(bayHTML).join('')+
+    bayHTML('ESPE');
   if(RADAR.open)renderRadarList();
-}
-function setStatus(t,k){
-  const was=t.status;if(was===k)return;
-  t.status=k;
-  if(k==='CURS')t.startedAt=now();
-  if(k==='PEND')t.startedAt=0;
-  if(k==='HECH'){t.doneAt=now();t.progress=100}
-  else{t.doneAt=0;if(was==='HECH'&&t.progress===100)t.progress=90}
-  t.updatedAt=now();
 }
 /* ---------- Eliminar / deshacer (compartido por panel y dBASE) ---------- */
 const UNDO=[];
@@ -778,34 +882,80 @@ function boardDelete(t){
   toast(`Ficha ${codeOf(t)} eliminada`,true);
   if(hadFocus){const rest=$$('.strip');const nx=rest[idx]||rest[idx-1];if(nx)nx.focus({preventScroll:true})}
 }
-function moveTask(t,dir){const i=Math.max(0,Math.min(3,SKEYS.indexOf(t.status)+dir));setStatus(t,SKEYS[i]);persist()}
 function focusStrip(id,flash){const s=document.querySelector(`.strip[data-id="${CSS.escape(id)}"]`);if(s){s.focus({preventScroll:false});if(flash){s.classList.remove('flash');void s.offsetWidth;s.classList.add('flash')}}}
+
+/* ---------- Arrastrar fichas: mantener pulsada y llevarla a otra bahía (ratón y pantalla táctil) ---------- */
+function dragReset(){clearTimeout(DRAG.timer);if(DRAG.el)DRAG.el.classList.remove('pressing');DRAG.id=null;DRAG.el=null;DRAG.pid=null;DRAG.active=false}
+function dragStart(){
+  const el=DRAG.el;if(!el||!document.body.contains(el)){dragReset();return}
+  DRAG.active=true;DRAG.suppress=true;el.classList.remove('pressing');
+  const r=el.getBoundingClientRect();DRAG.ox=Math.min(DRAG.x-r.left,r.width-20);DRAG.oy=DRAG.y-r.top;
+  const g=el.cloneNode(true);g.classList.add('ghost');g.classList.remove('flash','pressing','final','over','stale');g.removeAttribute('tabindex');g.removeAttribute('title');g.style.width=r.width+'px';
+  document.body.appendChild(g);DRAG.ghost=g;el.classList.add('dragging');document.body.classList.add('dragmode');
+  try{if(navigator.vibrate)navigator.vibrate(25)}catch(_){}
+  dragMove(DRAG.x,DRAG.y);
+  clearInterval(DRAG.scrollT);DRAG.scrollT=setInterval(()=>{if(!DRAG.active)return;const m=70;if(DRAG.y<m)window.scrollBy(0,-14);else if(DRAG.y>innerHeight-m)window.scrollBy(0,14);dragMove(DRAG.x,DRAG.y)},40);
+}
+function dragMove(x,y){
+  DRAG.x=x;DRAG.y=y;if(!DRAG.ghost)return;
+  DRAG.ghost.style.transform=`translate(${x-DRAG.ox}px,${y-DRAG.oy}px) rotate(-1.5deg)`;
+  const el=document.elementFromPoint(x,y),rk=el&&el.closest?el.closest('.rack'):null;
+  if(rk!==DRAG.over){if(DRAG.over)DRAG.over.classList.remove('over');DRAG.over=rk;if(rk)rk.classList.add('over')}
+}
+function dragEnd(drop){
+  const id=DRAG.id,rk=DRAG.over,key=rk?rk.dataset.s:null;
+  clearInterval(DRAG.scrollT);
+  if(DRAG.ghost)DRAG.ghost.remove();DRAG.ghost=null;
+  if(rk)rk.classList.remove('over');DRAG.over=null;
+  $$('.strip.dragging').forEach(x=>x.classList.remove('dragging'));document.body.classList.remove('dragmode');
+  dragReset();
+  setTimeout(()=>{DRAG.suppress=false},60);
+  if(DRAG.pendingRender){DRAG.pendingRender=false;renderBoard()}
+  if(drop&&key){const t=byId(id);if(t)dropTo(t,key)}
+}
 
 (function wireBoard(){
   const bays=$('#bays');
   bays.addEventListener('click',e=>{
+    if(DRAG.suppress){e.preventDefault();return}
     const clr=e.target.closest('[data-clear]');
     if(clr){
-      const q=Q.trim().toLowerCase();
-      const list=DB.tasks.filter(t=>!t.deleted&&t.status==='HECH'&&!UI.hidden.includes(t.area)&&(!q||(codeOf(t)+' '+t.title+' '+t.who+' '+t.notes).toLowerCase().includes(q)));
+      const k=clr.dataset.clear,q=Q.trim().toLowerCase();
+      const list=DB.tasks.filter(t=>!t.deleted&&bayOf(t)===k&&!UI.hidden.includes(t.area)&&(!q||(codeOf(t)+' '+t.title+' '+t.who+' '+t.notes).toLowerCase().includes(q)));
       if(!list.length)return;
-      if(!confirm(`¿Eliminar las ${list.length} fichas aterrizadas (hechas)?\nPodrá deshacerlo justo después.`))return;
-      deleteTasks(list);toast(`${list.length} fichas aterrizadas eliminadas`,true);return;
+      if(!confirm(`¿Eliminar las ${list.length} fichas de «${BAYNAME[k]}»?\nPodrá deshacerlo justo después.`))return;
+      deleteTasks(list);toast(`${list.length} fichas eliminadas de ${BAYNAME[k]}`,true);return;
     }
     const s=e.target.closest('.strip');if(!s)return;
     const t=byId(s.dataset.id);if(!t)return;
     if(e.target.closest('button[data-del]')){e.stopPropagation();boardDelete(t);return}
-    if(e.target.closest('[data-tko]')){e.stopPropagation();takeoff(t);return}
-    const b=e.target.closest('button[data-mv]');
-    if(b){e.stopPropagation();moveTask(t,+b.dataset.mv);focusStrip(t.id,true);return}
+    const act=e.target.closest('[data-act]');
+    if(act){e.stopPropagation();if(!act.disabled)doAct(t,act.dataset.act);return}
     openDb('edit',t.id);
   });
-  let dragId=null;
-  bays.addEventListener('dragstart',e=>{const s=e.target.closest('.strip');if(!s)return;dragId=s.dataset.id;e.dataTransfer.effectAllowed='move';try{e.dataTransfer.setData('text/plain',dragId)}catch(_){}s.classList.add('dragging')});
-  bays.addEventListener('dragend',()=>{dragId=null;$$('.strip.dragging').forEach(x=>x.classList.remove('dragging'));$$('.rack.over').forEach(x=>x.classList.remove('over'))});
-  bays.addEventListener('dragover',e=>{const r=e.target.closest('.rack');if(!r||!dragId)return;e.preventDefault();e.dataTransfer.dropEffect='move';$$('.rack.over').forEach(x=>x!==r&&x.classList.remove('over'));r.classList.add('over')});
-  bays.addEventListener('dragleave',e=>{const r=e.target.closest('.rack');if(r&&!r.contains(e.relatedTarget))r.classList.remove('over')});
-  bays.addEventListener('drop',e=>{const r=e.target.closest('.rack');if(!r||!dragId)return;e.preventDefault();const t=byId(dragId);if(t){setStatus(t,r.dataset.s);persist();focusStrip(t.id,true)}dragId=null});
+  bays.addEventListener('pointerdown',e=>{
+    if(DRAG.active)return;
+    const s=e.target.closest('.strip');if(!s||e.target.closest('button'))return;
+    if(e.pointerType==='mouse'&&e.button!==0)return;
+    DRAG.id=s.dataset.id;DRAG.el=s;DRAG.pid=e.pointerId;DRAG.type=e.pointerType||'mouse';
+    DRAG.sx=DRAG.x=e.clientX;DRAG.sy=DRAG.y=e.clientY;
+    s.classList.add('pressing');
+    clearTimeout(DRAG.timer);DRAG.timer=setTimeout(dragStart,DRAG.type==='mouse'?300:450);
+  });
+  document.addEventListener('pointermove',e=>{
+    if(!DRAG.id||e.pointerId!==DRAG.pid)return;
+    if(DRAG.active){e.preventDefault();dragMove(e.clientX,e.clientY);return}
+    DRAG.x=e.clientX;DRAG.y=e.clientY;
+    if(Math.hypot(e.clientX-DRAG.sx,e.clientY-DRAG.sy)>8){if(DRAG.type==='mouse')dragStart();else dragReset()}
+  });
+  document.addEventListener('pointerup',e=>{if(!DRAG.id||e.pointerId!==DRAG.pid)return;if(DRAG.active)dragEnd(true);else dragReset()});
+  document.addEventListener('pointercancel',e=>{if(!DRAG.id||e.pointerId!==DRAG.pid)return;if(!DRAG.active)dragReset()});
+  document.addEventListener('touchmove',e=>{if(!DRAG.active)return;e.preventDefault();const tt=e.touches[0];if(tt)dragMove(tt.clientX,tt.clientY)},{passive:false});
+  document.addEventListener('touchend',e=>{if(DRAG.active&&DRAG.type!=='mouse'){const tt=e.changedTouches[0];if(tt)dragMove(tt.clientX,tt.clientY);dragEnd(true)}});
+  document.addEventListener('touchcancel',()=>{if(DRAG.active)dragEnd(false)});
+  document.addEventListener('keydown',e=>{if(DRAG.active&&e.key==='Escape'){e.preventDefault();e.stopPropagation();dragEnd(false)}},true);
+  bays.addEventListener('contextmenu',e=>{if(e.target.closest('.strip'))e.preventDefault()});
+  bays.addEventListener('dragstart',e=>e.preventDefault());
   $('#chips').addEventListener('click',e=>{
     const c=e.target.closest('.chip');if(!c)return;const a=c.dataset.a;
     if(a==='*')UI.hidden=[];else UI.hidden=UI.hidden.includes(a)?UI.hidden.filter(x=>x!==a):[...UI.hidden,a];
@@ -815,6 +965,7 @@ function focusStrip(id,flash){const s=document.querySelector(`.strip[data-id="${
   $('#qClear').onclick=()=>{clearSearch();$('#q').focus()};
   $('#fbanner').addEventListener('click',e=>{if(e.target.closest('#fbClear'))clearFilters()});
   $('#showDone').addEventListener('change',e=>{UI.showDone=e.target.checked;saveUI();renderBoard()});
+  $('#appWin').addEventListener('change',e=>{UI.appDays=+e.target.value;saveUI();renderBoard()});
   $('#appDays').addEventListener('change',e=>{UI.approach=+e.target.value;saveUI();renderBoard()});
   $('#staleDays').addEventListener('change',e=>{UI.stale=+e.target.value;saveUI();renderBoard()});
   $('#btnDb').onclick=()=>openDb();
@@ -830,11 +981,12 @@ function clearFilters(){Q='';$('#q').value='';UI.hidden=[];saveUI();renderFilter
 let delArm=null,delAt=0;
 function boardKey(e){
   if(RADAR.open){if(e.key==='Escape'){e.preventDefault();closeRadar()}return}
+  if(DRAG.active)return;
   const tg=e.target;
   const inField=tg.matches&&tg.matches('input,textarea,select');
   if((e.ctrlKey||e.metaKey)&&!e.altKey&&(e.key==='z'||e.key==='Z')&&!inField){e.preventDefault();boardUndo();return}
   if(e.ctrlKey||e.metaKey||e.altKey)return;
-  if(tg.matches&&tg.matches('input,textarea,select')){if(e.key==='Escape'){if(tg.id==='q')clearSearch();tg.blur()}if(e.key==='Enter'&&tg.id==='q')tg.blur();return}
+  if(inField){if(e.key==='Escape'){if(tg.id==='q')clearSearch();tg.blur()}if(e.key==='Enter'&&tg.id==='q')tg.blur();return}
   if(tg.classList&&tg.classList.contains('strip')){
     const t=byId(tg.dataset.id);
     if(e.key==='Enter'){e.preventDefault();openDb('edit',t.id);return}
@@ -844,7 +996,6 @@ function boardKey(e){
       else{delArm=t.id;delAt=now();toast(`Pulse Supr otra vez para eliminar ${codeOf(t)}`,false)}
       return;
     }
-    if(e.shiftKey&&(e.key==='ArrowDown'||e.key==='ArrowUp'||e.key==='ArrowRight'||e.key==='ArrowLeft')){e.preventDefault();moveTask(t,(e.key==='ArrowDown'||e.key==='ArrowRight')?1:-1);focusStrip(t.id,true);return}
   }
   const k=e.key.toLowerCase();
   if(k==='n'){e.preventDefault();openDb('new')}
@@ -858,7 +1009,7 @@ function tickClock(){
   $('#rClk').textContent=`${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}Z`;
   const dc=$('#dClock');if(dc)dc.textContent=`${pad(d.getHours())}:${pad(d.getMinutes())}`;
   const day=todayISO();if(day!==tickClock.day){if(tickClock.day)renderBoard();tickClock.day=day}
-  if(d.getSeconds()===0){const sig=DB.tasks.map(t=>phase(t)+(isStale(t)?'s':'')).join();if(sig!==tickClock.sig){if(tickClock.sig!==undefined&&!$('#board').classList.contains('hidden')&&!document.querySelector('.strip.dragging'))renderBoard();tickClock.sig=sig}}
+  if(d.getSeconds()===0){const sig=DB.tasks.map(t=>bayOf(t)+phase(t)+(isStale(t)?'s':'')).join();if(sig!==tickClock.sig){if(tickClock.sig!==undefined&&!$('#board').classList.contains('hidden'))renderBoard();tickClock.sig=sig}}
 }
 
 /* =========================================================
@@ -919,7 +1070,7 @@ function warnIfHidden(t){
   let why='';
   if(UI.hidden.includes(t.area))why=`el área ${t.area} está oculta`;
   else if(Q.trim())why='hay una búsqueda activa';
-  else if(t.status==='HECH')why=UI.showDone?'está aterrizada hace más de 14 días':'«Ver aterrizadas» está desactivado';
+  else if(t.status==='HECH')why=UI.showDone?'se concluyó hace más de 14 días':'«Ver concluidas» está desactivado';
   if(!why)return;
   toast(`${codeOf(t)} está grabada, pero no se ve: ${why}`,false,{label:'MOSTRAR',fn:()=>{UI.hidden=[];Q='';$('#q').value='';if(t.status==='HECH')UI.showDone=true;saveUI();renderFilters();renderBoard();setTimeout(()=>focusStrip(t.id,true),30)}});
 }
@@ -980,6 +1131,7 @@ function loadForm(){
   $('#fAlta').textContent=DBS.cur!=='NEW'&&r.createdAt>1?'Alta: '+fmtTs(r.createdAt):'';
   $('#fMod').textContent=DBS.cur!=='NEW'&&r.updatedAt>1?'Última modificación: '+fmtTs(r.updatedAt):'';
   $('#vEdit').classList.toggle('isdel',!!r.deleted);
+  updateBayView();
   DBS.dirty=false;updateStatus();
 }
 function readForm(){
@@ -1009,7 +1161,7 @@ function saveRecord(manual){
   Object.assign(t,v);
   if(t.status==='HECH'&&was!=='HECH'){t.doneAt=now();t.progress=100}
   if(t.status!=='HECH')t.doneAt=0;
-  if(t.status==='CURS'&&was!=='CURS')t.startedAt=now();
+  if(t.status==='CURS'&&!t.startedAt)t.startedAt=now();
   if(t.status==='PEND')t.startedAt=0;
   t.updatedAt=now();
   UI.lastArea=t.area;saveUI();
@@ -1032,8 +1184,16 @@ function focusField(i){
   const el=FIELD_ORDER[i];el.focus();
   if(el.tagName==='INPUT'){const n=el.value.length;try{el.setSelectionRange(n,n)}catch(e){}}
 }
+function updateBayView(){
+  const due=parseDateInput(F.due.value);
+  if(due===null){$('#fBay').textContent='?';$('#fBayHint').textContent='(fecha límite no válida)';return}
+  const k=bayFor(F.status.value,due);
+  $('#fBay').textContent=BAYNAME[k];
+  $('#fBayHint').textContent=k==='ESPE'?'(pendiente de terceros)':due?'(llegada: tiene fecha límite)':'(salida: sin fecha límite)';
+}
 function onFormChange(e){
   if(!e.target.classList.contains('f'))return;
+  updateBayView();
   DBS.dirty=true;
   if(DBS.cur==='NEW')$('#fCode').textContent=F.area.value+pad(DB.seq,3)+'  (alta nueva)';
   updateStatus();
@@ -1112,10 +1272,10 @@ function cmdUndo(){
 }
 async function cmdDeleteDone(){
   const list=DB.tasks.filter(t=>t.status==='HECH');
-  if(!list.length)return msg('No hay fichas aterrizadas (hechas)');
-  if(!(await ask(`¿Eliminar las ${list.length} fichas aterrizadas (hechas)? (S/N)`)))return;
+  if(!list.length)return msg('No hay fichas concluidas');
+  if(!(await ask(`¿Eliminar las ${list.length} fichas concluidas (aterrizadas y despegadas)? (S/N)`)))return;
   if(DBS.mode==='edit'&&DBS.cur!=='NEW'&&list.some(t=>t.id===DBS.cur))DBS.dirty=false;
-  deleteTasks(list);refreshView();msgUndo(`${list.length} fichas aterrizadas eliminadas`);
+  deleteTasks(list);refreshView();msgUndo(`${list.length} fichas concluidas eliminadas`);
 }
 function msgUndo(text){
   const m=$('#msg');m.className='msgline ok';
@@ -1126,7 +1286,7 @@ $('#msg').addEventListener('click',e=>{if(e.target.closest('.undo'))cmdUndo()});
 $('#vEdit').addEventListener('click',e=>{const b=e.target.closest('[data-e]');if(!b)return;({save:()=>saveRecord(true),new:cmdNew,done:cmdDone,del:cmdDelete})[b.dataset.e]()});
 function cmdDone(){
   if(DBS.mode==='edit'){if(DBS.cur==='NEW'&&!F.title.value.trim())return;F.status.value='HECH';F.progress.value='100';DBS.dirty=true;saveRecord(true);return}
-  if(DBS.mode==='browse'){const t=byId(DBS.cur);if(!t)return;setStatus(t,'HECH');persist();renderBrowse();msg(codeOf(t)+' aterrizada','ok')}
+  if(DBS.mode==='browse'){const t=byId(DBS.cur);if(!t)return;setStatus(t,'HECH');persist();renderBrowse();msg(codeOf(t)+' concluida → '+BAYNAME[bayOf(t)],'ok')}
 }
 async function cmdPack(){
   const del=DB.tasks.filter(t=>t.deleted);
@@ -1269,24 +1429,24 @@ INDICADOR DE PUNTO (Utilidades › Indicador de punto)
   ALTA INSP P1 @viernes Informe de supervisión
   LIST · EDIT 12 · HECHA 12 · BORRAR 12 · DESHACER
 
-AVISOS DE PLAZO
-  Fecha parpadeando: aproximación final (plazo cercano)
-  Fecha en rojo: vencida
-  El margen se elige en el panel: «APROX. FINAL»
+BAHÍAS DEL PANEL (se deducen del estado y de la fecha límite)
+  Con fecha límite (LLEGADAS):
+    EN RUTA ......... faltan más de 7 días
+    EN APROXIMACIÓN . faltan 7 días o menos (vencidas en rojo)
+    ATERRIZADAS ..... concluidas
+  Sin fecha límite (SALIDAS):
+    EN PLATAFORMA ... sin iniciar (parpadea si espera mucho)
+    EN VUELO ........ iniciadas, sin concluir
+    DESPEGADAS ...... concluidas
+  EN ESPERA ......... pendientes de terceros (estado ESPE)
+  Los 7 días se cambian en el panel: «APROXIMACIÓN»
 
-RADAR: botón «◎ Radar» del panel (o tecla R)
-  Con fecha: aviones en llegada hacia la pista
-  Sin fecha: aparcados en plataforma; «✈ DESPEGAR» los inicia
-  Estado parpadeando en la tabla: mucho tiempo en plataforma
-
-ESTADOS (bahías del panel)
-  PEND En plataforma · CURS En vuelo
-  ESPE En espera     · HECH Aterrizada</pre>`});
+RADAR: botón «◎ Radar» del panel (o tecla R)</pre>`});
 }
 
 /* ---------- Menús ---------- */
 const MENUS=[
-  {t:'Registros',items:[['Añadir registro','F3',cmdNew],['Duplicar registro','',cmdDup],['Marcar como HECHA (aterrizada)','',cmdDone],'-',['Eliminar ficha (o las marcadas)','F8',cmdDelete],['Deshacer última eliminación','Ctrl+Z',cmdUndo],['Eliminar todas las aterrizadas','',cmdDeleteDone],['Eliminar fichas de ejemplo','',removeDemo],['Empaquetar (registros con *)','',cmdPack]]},
+  {t:'Registros',items:[['Añadir registro','F3',cmdNew],['Duplicar registro','',cmdDup],['Concluir ficha (aterriza / despega)','',cmdDone],'-',['Eliminar ficha (o las marcadas)','F8',cmdDelete],['Deshacer última eliminación','Ctrl+Z',cmdUndo],['Eliminar todas las concluidas','',cmdDeleteDone],['Eliminar fichas de ejemplo','',removeDemo],['Empaquetar (registros con *)','',cmdPack]]},
   {t:'Organizar',items:[['Orden natural (nº registro)','',()=>setOrder('n')],['Ordenar por prioridad','',()=>setOrder('pri')],['Ordenar por fecha límite','',()=>setOrder('due')],['Ordenar por área','',()=>setOrder('area')],'-',['Mostrar todas las fichas','',()=>setFilter('all')],['Mostrar sólo fichas activas','',()=>setFilter('active')]]},
   {t:'Ir a',items:[['Primer registro','',()=>goEdge(false)],['Último registro','',()=>goEdge(true)],['Registro nº…','',goN],['Buscar texto…','F4',cmdSearch],'-',['Vista de edición','',()=>{if(DBS.mode!=='edit')showMode('edit')}],['Vista de tabla','F2',()=>{if(DBS.mode==='edit'&&!leaveRecord())return;showMode('browse')}]]},
   {t:'Utilidades',items:[['Indicador de punto (órdenes)','',()=>{if(DBS.mode==='edit'&&!leaveRecord())return;showMode('dot')}],['Configurar áreas','',()=>{if(DBS.mode==='edit'&&!leaveRecord())return;showMode('areas')}],['Sincronización (GitHub)…','',()=>{if(DBS.mode==='edit'&&!leaveRecord())return;showMode('sync')}],['Sincronizar ahora','',()=>syncNow(true)],'-',['Exportar copia de seguridad (JSON)','',exportJSON],['Importar copia de seguridad (JSON)','',importJSON],['Exportar a Excel (CSV)','',exportCSV]]},
@@ -1325,8 +1485,8 @@ function renderBrowse(){
   let idx=l.findIndex(t=>t.id===DBS.cur);
   if(idx<0)idx=0;
   if(l[idx])DBS.cur=l[idx].id;
-  const rows=l.map((t,x)=>`<tr class="${x===idx?'sel':''} ${DBS.sel.has(t.id)?'mk':''} ${t.deleted?'del':''} ${t.status==='HECH'?'dn':''}" data-x="${x}"><td class="r">${t.n}</td><td class="bm" title="Marcar">${DBS.sel.has(t.id)?'■':t.deleted?'*':'·'}</td><td>${esc(codeOf(t))}</td><td class="tt">${esc(t.title)}</td><td>${t.pri}</td><td class="${isStale(t)?'blink':''}">${t.status}</td><td class="${({final:'blink',over:'lateD'})[phase(t)]||''}">${fmtDate(t.due)||'  /  /    '}</td><td class="r">${t.progress}</td><td>${esc(t.who)}</td></tr>`).join('');
-  $('#brwWrap').innerHTML=`<table class="brw"><thead><tr><th>REG</th><th>M</th><th>CÓDIGO</th><th>TAREA</th><th>P</th><th>ESTADO</th><th>LÍMITE</th><th>AV%</th><th>PERSONA</th></tr></thead><tbody>${rows||'<tr><td colspan="9">** Fichero vacío · F3 para añadir un registro **</td></tr>'}</tbody></table>`;
+  const rows=l.map((t,x)=>`<tr class="${x===idx?'sel':''} ${DBS.sel.has(t.id)?'mk':''} ${t.deleted?'del':''} ${t.status==='HECH'?'dn':''}" data-x="${x}"><td class="r">${t.n}</td><td class="bm" title="Marcar">${DBS.sel.has(t.id)?'■':t.deleted?'*':'·'}</td><td>${esc(codeOf(t))}</td><td class="tt">${esc(t.title)}</td><td>${t.pri}</td><td>${t.status}</td><td class="${isStale(t)?'blink':''}">${BAYSHORT[bayOf(t)]}</td><td class="${({final:'blink',over:'lateD'})[phase(t)]||''}">${fmtDate(t.due)||'  /  /    '}</td><td class="r">${t.progress}</td><td>${esc(t.who)}</td></tr>`).join('');
+  $('#brwWrap').innerHTML=`<table class="brw"><thead><tr><th>REG</th><th>M</th><th>CÓDIGO</th><th>TAREA</th><th>P</th><th>ESTADO</th><th>BAHÍA</th><th>LÍMITE</th><th>AV%</th><th>PERSONA</th></tr></thead><tbody>${rows||'<tr><td colspan="10">** Fichero vacío · F3 para añadir un registro **</td></tr>'}</tbody></table>`;
   const sel=$('#brwWrap tr.sel');if(sel)sel.scrollIntoView({block:'nearest'});
   updateStatus();
 }
@@ -1373,10 +1533,10 @@ function dotHelp(){[
   '  ALTA [área] [P1-P4] [@fecha] texto   Alta rápida de una ficha',
   '        ej.: ALTA INSP P1 @viernes Informe de supervisión CEIP',
   '        ej.: ALTA ACAD @+3 Corregir supuestos   (sin argumentos: formulario)',
-  '  LIST [área|PEND|CURS|ESPE|HECH|TODO]  Listar fichas',
+  '  LIST [área|RUTA|APROX|ATER|PLAT|VUELO|DESP|ESPERA|TODO]  Listar fichas',
   '  BUSCAR texto        Buscar en tareas, personas y notas',
   '  EDIT n              Editar el registro n (o INSP042)',
-  '  HECHA n             Aterrizar (dar por hecha) la ficha n',
+  '  HECHA n             Concluir la ficha n (aterriza o despega)',
   '  ESTADO n PEND|CURS|ESPE|HECH   Cambiar de bahía',
   '  BORRAR n            Eliminar la ficha n (BORRAR HECHAS: todas las hechas)',
   '  DESHACER            Recuperar la última eliminación',
@@ -1385,16 +1545,18 @@ function dotHelp(){[
   '  ? DATE()  ? TIME()  ? RECCOUNT()',
   '  CLEAR               Limpiar pantalla',
   '  PANEL / QUIT        Volver al panel de fichas'].forEach(l=>out(l))}
-function listLine(t){return `${String(t.n).padStart(4)} ${t.deleted?'*':' '} ${codeOf(t).padEnd(8)} P${t.pri} ${t.status} ${(fmtDate(t.due)||'').padEnd(10)} ${String(t.progress).padStart(3)}%  ${t.title.slice(0,60)}`}
+function listLine(t){return `${String(t.n).padStart(4)} ${t.deleted?'*':' '} ${codeOf(t).padEnd(8)} P${t.pri} ${t.status} ${BAYSHORT[bayOf(t)].padEnd(6)} ${(fmtDate(t.due)||'').padEnd(10)} ${String(t.progress).padStart(3)}%  ${t.title.slice(0,56)}`}
 function dotList(arg){
-  const a=(arg||'').toUpperCase().trim();let l=DB.tasks.slice();
+  const a=(arg||'').toUpperCase().trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'');let l=DB.tasks.slice();
+  const BA={RUTA:'RUTA',APRO:'APRO',APROX:'APRO',APROXIMACION:'APRO',ATER:'ATER',ATERRIZADAS:'ATER',PLAT:'PLAT',PLATAFORMA:'PLAT',VUEL:'VUEL',VUELO:'VUEL',DESP:'DESP',DESPEGADAS:'DESP',ESPERA:'ESPE'};
   if(a==='TODO'||a==='ALL'||a==='TODAS'){}
+  else if(BA[a])l=l.filter(t=>!t.deleted&&bayOf(t)===BA[a]);
   else if(SKEYS.includes(a))l=l.filter(t=>t.status===a);
   else if(a&&DB.areas.some(x=>x.code===a))l=l.filter(t=>t.area===a&&t.status!=='HECH');
   else if(a){l=l.filter(t=>(codeOf(t)+' '+t.title+' '+t.who+' '+t.notes).toLowerCase().includes(arg.toLowerCase()))}
   else l=l.filter(t=>t.status!=='HECH'&&!t.deleted);
   l.sort(taskSort);
-  out(' REG B CÓDIGO   P  EST  LÍMITE      AV%  TAREA','ok');
+  out(' REG B CÓDIGO   P  EST  BAHÍA  LÍMITE      AV%  TAREA','ok');
   l.forEach(t=>out(listLine(t)));
   out(`${l.length} registro(s)`,'ok');
 }
@@ -1450,11 +1612,11 @@ async function runDot(line){
     case 'UNDO':case 'DESHACER':{const n=cmdUndo();return out(n?n+' ficha(s) recuperada(s)':'No hay eliminaciones que deshacer',n?'ok':'err')}
     case 'RECALL':case 'RECUPERAR':if(!(t=one()))return;t.deleted=false;t.updatedAt=now();persist();return out('1 registro recuperado: '+codeOf(t),'ok');
     case 'PACK':case 'EMPAQUETAR':{const n=await cmdPack();return out(n+' registro(s) eliminado(s)','ok')}
-    case 'HECHA':case 'DONE':case 'ATERRIZA':if(!(t=one()))return;setStatus(t,'HECH');persist();return out(codeOf(t)+' aterrizada ✓','ok');
+    case 'HECHA':case 'DONE':case 'ATERRIZA':case 'CONCLUIR':if(!(t=one()))return;setStatus(t,'HECH');persist();return out(codeOf(t)+' concluida ✓ → '+BAYNAME[bayOf(t)],'ok');
     case 'ESTADO':case 'STATUS':{
       const p=arg.split(/\s+/);t=findN(p[0]);const k=(p[1]||'').toUpperCase();
       if(!t||!SKEYS.includes(k)){out('*** Uso: ESTADO n PEND|CURS|ESPE|HECH ***','err');beep();return}
-      setStatus(t,k);persist();return out(codeOf(t)+' → '+k,'ok');
+      setStatus(t,k);persist();return out(codeOf(t)+' → '+k+' · bahía '+BAYNAME[bayOf(t)],'ok');
     }
     case 'SYNC':case 'SINCRONIZAR':await syncNow(true);return out('Sincronización: '+syncText(),SYNC.state==='err'?'err':'ok');
     case 'USE':return out('Fichero en uso: C:\\PEPE\\TAREAS.DBF ('+DB.tasks.length+' registros)');
@@ -1681,7 +1843,7 @@ try{const v=+localStorage.getItem('pepe-atc-radar-range');if([7,30,90].includes(
 const RINGS={7:[1,2,3,5,7],30:[1,3,7,14,30],90:[1,7,14,30,60,90]};
 const RFONT="'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace";
 const TAU=Math.PI*2, CTR=.2, CYAN='#55e6ff';
-const STNAME={PEND:'En plataforma (pendiente)',CURS:'En vuelo (en curso)',ESPE:'En espera (de terceros)',HECH:'Aterrizada'};
+const STNAME={PEND:'Sin iniciar',CURS:'Iniciada',ESPE:'En espera de terceros',HECH:'Concluida'};
 function hrsLeft(t){const [y,m,d]=t.due.split('-').map(Number);let hh=23,mi=59;if(t.time){const p=t.time.split(':');hh=+p[0];mi=+p[1]}return(new Date(y,m-1,d,hh,mi).getTime()-now())/36e5}
 function rOf(h){const D=RADAR.range*24,x=Math.max(0,Math.min(h,D));return CTR+(.98-CTR)*Math.log1p(x/3)/Math.log1p(D/3)}
 function hashN(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return(h>>>0)/4294967295}
@@ -1697,15 +1859,18 @@ function sectorAngle(sec,t){const s=sec[t.area];if(!s)return uAng(hashN(t.id)*23
 function radarGeom(){const {cx,cy,R,k}=RADAR,L=.16*R;return{L,xe:cx+L/2,xw:cx-L/2,ax0:cx-.11*R,ax1:cx+.11*R,ay0:cy+9*k,ay1:cy+.13*R}}
 function radarSets(){
   const live=DB.tasks.filter(t=>!t.deleted&&!UI.hidden.includes(t.area));
-  const act=live.filter(t=>t.status!=='HECH');
+  const act=live.filter(t=>t.status!=='HECH'),B=bayOf,H=(x,y)=>hrsLeft(x)-hrsLeft(y);
+  const recent=t=>(t.doneAt||t.updatedAt)>=now()-7*864e5,dsort=(x,y)=>(y.doneAt||y.updatedAt)-(x.doneAt||x.updatedAt);
   return{live,act,
-    finals:act.filter(t=>phase(t)==='final').sort((a,b)=>hrsLeft(a)-hrsLeft(b)),
-    overs:act.filter(t=>phase(t)==='over').sort((a,b)=>a.n-b.n),
-    holds:act.filter(t=>t.status==='ESPE'&&!phase(t)),
-    next:act.filter(t=>t.due&&!phase(t)&&t.status!=='ESPE').sort((a,b)=>hrsLeft(a)-hrsLeft(b)),
-    parked:act.filter(t=>t.status==='PEND'&&!t.due).sort((a,b)=>platRef(a)-platRef(b)),
-    deps:act.filter(t=>t.status==='CURS'&&!t.due).sort((a,b)=>depHours(a)-depHours(b)),
-    landed:live.filter(t=>t.status==='HECH'&&t.doneAt&&isoOf(new Date(t.doneAt))===todayISO())};
+    appro:act.filter(t=>B(t)==='APRO'&&phase(t)!=='over').sort(H),
+    finals:act.filter(t=>B(t)==='APRO'&&phase(t)==='final'),
+    overs:act.filter(t=>B(t)==='APRO'&&phase(t)==='over').sort((x,y)=>x.n-y.n),
+    ruta:act.filter(t=>B(t)==='RUTA').sort(H),
+    holds:act.filter(t=>B(t)==='ESPE'),
+    parked:act.filter(t=>B(t)==='PLAT').sort((x,y)=>platRef(x)-platRef(y)),
+    deps:act.filter(t=>B(t)==='VUEL').sort((x,y)=>depHours(x)-depHours(y)),
+    landed:live.filter(t=>B(t)==='ATER'&&recent(t)).sort(dsort),
+    departed:live.filter(t=>B(t)==='DESP'&&recent(t)).sort(dsort)};
 }
 function openRadar(){
   if(!$('#dbase').classList.contains('hidden'))return;
@@ -1765,6 +1930,9 @@ function buildRadarBg(){
   const eod=new Date();eod.setHours(23,59,0,0);const xf=cx+rOf((eod-now())/36e5+UI.approach*24)*R;
   g.strokeStyle='#ffb000';g.lineWidth=2;g.beginPath();g.moveTo(xf,cy-7*k);g.lineTo(xf,cy+7*k);g.stroke();g.lineWidth=1;
   g.fillStyle='#ffb000';g.font=`600 ${9.5*k}px ${RFONT}`;g.fillText('FAF',xf,cy-14*k);
+  const xi=cx+rOf((eod-now())/36e5+UI.appDays*24)*R;
+  g.strokeStyle='rgba(255,176,0,.8)';g.lineWidth=2;g.beginPath();g.moveTo(xi,cy-10*k);g.lineTo(xi,cy+10*k);g.stroke();g.lineWidth=1;
+  g.fillText('IAF',xi,cy-17*k);g.font=`${8*k}px ${RFONT}`;g.fillText(`APROX ≤${UI.appDays}D`,xi,cy+19*k);g.font=`600 ${9.5*k}px ${RFONT}`;
   g.textAlign='right';g.fillText('LOC 27 ◂ LLEGADAS',cx+R*.97,cy+13*k);
   // Salidas (SID) por el oeste
   g.strokeStyle='rgba(85,230,255,.16)';g.beginPath();g.moveTo(G.xw,cy);g.lineTo(cx-R,cy-R*.42);g.moveTo(G.xw,cy);g.lineTo(cx-R,cy+R*.42);g.stroke();
@@ -1803,18 +1971,19 @@ function drawRadar(){
   const pn=Z.parked.length,aw=G.ax1-G.ax0,ah=G.ay1-G.ay0;
   const sp=Math.min(12*k,Math.sqrt(aw*ah/Math.max(1,pn))),cols=Math.max(1,Math.floor(aw/sp));
   for(const t of Z.act){
-    const ph=phase(t);let kind,a=0,r=0,hd=0,x,y,hx,hy,h=0;
-    if(t.due){
+    const ph=phase(t),bay=bayOf(t);let kind,a=0,r=0,hd=0,x,y,hx,hy,h=0;
+    if(bay==='APRO'){
       h=hrsLeft(t);
-      if(ph==='over'){const i=Z.overs.indexOf(t);a=i/Z.overs.length*TAU+T*TAU/60;r=.175;kind='over';hd=a+Math.PI/2}
-      else if(ph==='final'){const i=Z.finals.indexOf(t);r=rOf(h);a=i?((i%2?1:-1)*Math.ceil(i/2)*.055):0;kind='final';hd=Math.PI}
-      else{a=sectorAngle(sec,t);r=rOf(h);kind=t.status==='ESPE'?'hold':'in';hd=a+Math.PI}
-    }else if(t.status==='PEND'){
+      if(ph==='over'){const i=Z.overs.indexOf(t);a=i/Math.max(1,Z.overs.length)*TAU+T*TAU/60;r=.175;kind='over';hd=a+Math.PI/2}
+      else{const i=Z.appro.indexOf(t);r=rOf(h);a=i?Math.max(-.45,Math.min(.45,(i%2?1:-1)*Math.ceil(i/2)*.05)):0;kind=ph==='final'?'final':'appr';hd=Math.PI}
+    }else if(bay==='RUTA'){h=hrsLeft(t);a=sectorAngle(sec,t);r=rOf(h);kind='in';hd=a+Math.PI}
+    else if(bay==='ESPE'){
+      kind='hold';
+      if(t.due){h=hrsLeft(t);a=sectorAngle(sec,t);r=Math.max(.24,rOf(h))}else{a=Math.PI+(hashN(t.id)-.5)*.6;r=.45}
+    }else if(bay==='PLAT'){
       const i=Z.parked.indexOf(t);kind='park';hd=-Math.PI/2;
       x=G.ax0+sp/2+(i%cols)*sp;y=G.ay0+sp/2+Math.floor(i/cols)*sp;
-    }else if(t.status==='CURS'){
-      h=depHours(t);a=Math.PI+(hashN(t.id)-.5)*.75;r=rOf(h);kind='dep';hd=a;
-    }else{a=Math.PI+(hashN(t.id)-.5)*.6;r=.45;kind='hold'}
+    }else{h=depHours(t);a=Math.PI+(hashN(t.id)-.5)*.75;r=rOf(h);kind='dep';hd=a}
     if(kind!=='park'){hx=cx+r*R*Math.cos(a);hy=cy+r*R*Math.sin(a);x=hx;y=hy}
     if(kind==='hold'){
       const q=T*TAU/10+hashN(t.id)*TAU,L=11*k,W=5*k,tx=-Math.sin(a),ty=Math.cos(a),rx=Math.cos(a),ry=Math.sin(a);
@@ -1823,14 +1992,14 @@ function drawRadar(){
     }
     blips.push({t,kind,a,hd,x,y,hx,hy,h});
   }
-  const colorOf=b=>b.kind==='over'?'#ff4d3d':b.kind==='final'?'#ffb000':b.kind==='dep'?CYAN:b.kind==='park'?(isStale(b.t)?CYAN:'#6fbf8a'):col(areaOf(b.t.area).color);
+  const colorOf=b=>(b.kind==='over'||(b.kind==='hold'&&phase(b.t)==='over'))?'#ff4d3d':(b.kind==='final'||b.kind==='appr')?'#ffb000':b.kind==='dep'?CYAN:b.kind==='park'?(isStale(b.t)?CYAN:'#6fbf8a'):col(areaOf(b.t.area).color);
   // rutas animadas: llegadas hacia la pista, salidas desde la pista
   ctx.setLineDash([3*k,7*k]);ctx.lineDashOffset=-T*16*k;ctx.lineWidth=1.2;
   for(const b of blips){
-    if(b.kind!=='in'&&b.kind!=='final'&&b.kind!=='dep')continue;
-    ctx.globalAlpha=b.kind==='final'?.75:.4;ctx.strokeStyle=colorOf(b);ctx.beginPath();
+    if(b.kind!=='in'&&b.kind!=='final'&&b.kind!=='appr'&&b.kind!=='dep')continue;
+    ctx.globalAlpha=b.kind==='final'?.75:b.kind==='appr'?.55:.4;ctx.strokeStyle=colorOf(b);ctx.beginPath();
     if(b.kind==='in'){ctx.moveTo(b.x,b.y);ctx.lineTo(cx+CTR*R*Math.cos(b.a),cy+CTR*R*Math.sin(b.a))}
-    else if(b.kind==='final'){ctx.moveTo(b.x,b.y);ctx.lineTo(G.xe,cy)}
+    else if(b.kind==='final'||b.kind==='appr'){ctx.moveTo(b.x,b.y);ctx.lineTo(G.xe,cy)}
     else{ctx.moveTo(G.xw,cy);ctx.lineTo(b.x,b.y)}
     ctx.stroke();
   }
@@ -1842,11 +2011,13 @@ function drawRadar(){
     if(b.kind==='over')al=blink?1:.3;
     else if(b.kind==='final')al=blink?1:.55;
     else if(b.kind==='park')al=isStale(t)?(blinkS?1:.2):.85;
+    else if(b.kind==='appr')al=Math.max(al,.8);
+    else if(b.kind==='hold'&&phase(t)==='over')al=blink?1:.35;
     if(b.kind==='hold'){ctx.save();ctx.globalAlpha=.8;ctx.translate(b.hx,b.hy);ctx.rotate(b.a+Math.PI/2);ctx.strokeStyle='rgba(255,176,0,.45)';ctx.setLineDash([2,3]);ctx.beginPath();ctx.ellipse(0,0,11*k,5*k,0,0,TAU);ctx.stroke();ctx.setLineDash([]);ctx.restore()}
     if(b.kind!=='park'){const bx=Math.cos(b.hd),by=Math.sin(b.hd);for(let j=1;j<=4;j++){ctx.globalAlpha=al*(.5-j*.1);ctx.fillStyle=color;ctx.beginPath();ctx.arc(b.x-bx*(j*6+4)*k,b.y-by*(j*6+4)*k,1.6*k,0,TAU);ctx.fill()}}
     ctx.globalAlpha=al;ctx.fillStyle=color;ctx.strokeStyle=color;
     const ps=b.kind==='park'?Math.min(4.5*k,sp*.36):(b.kind==='final'||b.kind==='over'?6.5:5.5)*k;
-    plane(ctx,b.x,b.y,b.hd,ps,!(b.kind==='in'&&t.status==='PEND'));
+    plane(ctx,b.x,b.y,b.hd,ps,!((b.kind==='in'||b.kind==='appr'||b.kind==='final')&&t.status==='PEND'));
     if(t.pri===1&&b.kind!=='over'&&b.kind!=='park'){ctx.globalAlpha=al*.7;ctx.beginPath();ctx.arc(b.x,b.y,10*k,0,TAU);ctx.stroke()}
     if(RADAR.hl===t.id){ctx.globalAlpha=1;ctx.strokeStyle='#ffffff';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(b.x,b.y,13*k,0,TAU);ctx.stroke();ctx.lineWidth=1}
     if(b.kind==='park'&&!isStale(t)&&RADAR.hl!==t.id)continue;
@@ -1856,7 +2027,7 @@ function drawRadar(){
       :b.kind==='park'?`PLAT ${platDays(t)}d`
       :b.kind==='dep'?`DEP +${etaTxt(b.h)}${fl}`
       :b.kind==='hold'&&!t.due?`P${t.pri} HOLD`
-      :`P${t.pri} ${etaTxt(b.h)}${t.status==='CURS'?fl:t.status==='ESPE'?' HOLD':''}`;
+      :`P${t.pri} ${etaTxt(b.h)}${b.kind==='appr'?' APP':b.kind==='final'?' FINAL':''}${t.status==='CURS'?fl:t.status==='ESPE'?' HOLD':''}`;
     ctx.font=`600 ${fs}px ${RFONT}`;const w1=ctx.measureText(l1).width;ctx.font=`${fs}px ${RFONT}`;
     const w=Math.max(w1,ctx.measureText(l2).width)+8,hgt=2*lh+4;
     const cands=[[10*k,-hgt-6*k],[10*k,6*k],[-w-10*k,-hgt-6*k],[-w-10*k,6*k],[14*k,-hgt/2],[-w-14*k,-hgt/2],
@@ -1874,14 +2045,14 @@ function drawRadar(){
     const la=Math.max(.75,al);
     ctx.globalAlpha=la*.5;ctx.strokeStyle=color;ctx.beginPath();ctx.moveTo(b.x,b.y);ctx.lineTo(pos[0]+(pos[0]<b.x?w:0),pos[1]+(pos[1]<b.y?hgt:0));ctx.stroke();
     ctx.globalAlpha=.6;ctx.fillStyle='#010a05';ctx.fillRect(pos[0],pos[1],w,hgt);
-    ctx.globalAlpha=la;ctx.fillStyle=b.kind==='over'?'#ff7d70':b.kind==='final'?'#ffc040':(b.kind==='dep'||b.kind==='park')?'#9fefff':(t.status==='PEND'?'#8fd9a6':'#b4ffcb');
+    ctx.globalAlpha=la;ctx.fillStyle=b.kind==='over'?'#ff7d70':(b.kind==='final'||b.kind==='appr')?'#ffc040':(b.kind==='dep'||b.kind==='park')?'#9fefff':(t.status==='PEND'?'#8fd9a6':'#b4ffcb');
     ctx.font=`600 ${fs}px ${RFONT}`;ctx.fillText(l1,pos[0]+3,pos[1]+2);
     ctx.font=`${fs}px ${RFONT}`;ctx.fillText(l2,pos[0]+3,pos[1]+2+lh);
   }
   ctx.globalAlpha=1;
   ctx.fillStyle='#3dbb6c';ctx.font=`${10*k}px ${RFONT}`;ctx.textBaseline='top';ctx.textAlign='left';
   ctx.fillText(`ALCANCE ${RADAR.range}D`,6,6);ctx.fillText(`FAF: ${UI.approach===0?'MISMO DÍA':UI.approach+'D ANTES'}`,6,6+13*k);
-  ctx.textAlign='right';ctx.fillText(`LLEGADAS ${blips.filter(b=>b.t.due).length} · SALIDAS ${Z.deps.length} · PLATAF. ${pn}`,size-6,6);
+  ctx.textAlign='right';ctx.fillText(`RUTA ${Z.ruta.length} · APROX ${Z.appro.length+Z.overs.length} · VUELO ${Z.deps.length} · PLATAF ${pn} · ESPERA ${Z.holds.length}`,size-6,6);
   RADAR.blips=blips.map(b=>({id:b.t.id,x:b.x,y:b.y}));
 }
 function radarHit(x,y){let best=null,bd=20;for(const b of RADAR.blips){const d=Math.hypot(b.x-x,b.y-y);if(d<bd){bd=d;best=b}}return best}
@@ -1895,7 +2066,7 @@ function showTip(b,x,y,touch){
   else if(t.status==='PEND')when=`Sin fecha · en plataforma desde hace ${platDays(t)} día(s)${isStale(t)?'<br><i>⚠ Lleva mucho tiempo sin despegar</i>':''}`;
   else if(t.status==='CURS')when=`Sin fecha · despegó hace ${etaTxt(depHours(t))}`;
   else when='Sin fecha · en circuito de espera';
-  tip.innerHTML=`<b>${esc(codeOf(t))}</b> · ${esc(areaOf(t.area).name)}<br>${esc(t.title)}<br>${when}<br>${STNAME[t.status]} · P${t.pri} ${PRI[t.pri]} · ${t.progress}%${touch?'<br><i>Toque otra vez para abrir la ficha</i>':''}`;
+  tip.innerHTML=`<b>${esc(codeOf(t))}</b> · ${esc(areaOf(t.area).name)}<br><i>${BAYNAME[bayOf(t)]}</i><br>${esc(t.title)}<br>${when}<br>${STNAME[t.status]} · P${t.pri} ${PRI[t.pri]} · ${t.progress}%${touch?'<br><i>Toque otra vez para abrir la ficha</i>':''}`;
   tip.classList.remove('hidden');
   const c=$('#rCvs'),wrap=$('#rWrap');
   let lx=c.offsetLeft+x+16,ly=c.offsetTop+y+14;
@@ -1907,26 +2078,27 @@ function rItem(t,cls,eta,extra){return `<div class="ritem ${cls}" data-id="${esc
 function renderRadarList(){
   RADAR.lastList=now();buildRadarBg();
   const Z=radarSets(),nst=Z.parked.filter(isStale).length;
-  $('#rCnt').innerHTML=`<span class="${Z.finals.length?'rfin':''}">EN FINAL<b>${Z.finals.length}</b></span><span class="${Z.overs.length?'rovr':''}">SOBRE EL CAMPO<b>${Z.overs.length}</b></span><span class="${nst?'rstl':''}">EN PLATAFORMA<b>${Z.parked.length}</b></span><span>SALIDAS<b>${Z.deps.length}</b></span><span>EN ESPERA<b>${Z.holds.length}</b></span><span>ATERRIZADAS HOY<b>${Z.landed.length}</b></span>`;
+  $('#rCnt').innerHTML=`<span class="${Z.finals.length?'rfin':''}">EN APROX.<b>${Z.appro.length}</b></span><span class="${Z.overs.length?'rovr':''}">VENCIDAS<b>${Z.overs.length}</b></span><span>EN RUTA<b>${Z.ruta.length}</b></span><span class="${nst?'rstl':''}">PLATAFORMA<b>${Z.parked.length}</b></span><span>EN VUELO<b>${Z.deps.length}</b></span><span>EN ESPERA<b>${Z.holds.length}</b></span>`;
   const sec=(title,sub,items,fn)=>`<div class="rsec"><h3>${title}<small>${sub}</small><b>${items.length}</b></h3>${items.length?items.map(fn).join(''):'<div class="rempty">— NINGUNA —</div>'}</div>`;
   $('#rSide').innerHTML=
-    sec('EN FINAL','aproximación',Z.finals,t=>rItem(t,'final','FINAL '+etaTxt(hrsLeft(t))))+
-    sec('SOBRE EL CAMPO','vencidas',Z.overs,t=>rItem(t,'over',(t.pri===1?'7700 ':'')+'+'+etaTxt(hrsLeft(t))))+
-    sec('EN PLATAFORMA','sin fecha · esperando despegue',Z.parked,t=>rItem(t,isStale(t)?'stale':'',platDays(t)+'d',`<button type="button" class="rtko" data-tko="${esc(t.id)}" title="Iniciar la tarea (despegar)">✈</button>`))+
-    sec('SALIDAS','en curso sin fecha',Z.deps,t=>rItem(t,'dep','+'+etaTxt(depHours(t))))+
-    sec('EN ESPERA','circuito de espera',Z.holds,t=>rItem(t,'',t.due?etaTxt(hrsLeft(t)):'—'))+
-    sec('PRÓXIMAS LLEGADAS','por orden de plazo',Z.next.slice(0,10),t=>rItem(t,'',etaTxt(hrsLeft(t))))+
-    sec('ATERRIZADAS HOY','hechas',Z.landed,t=>rItem(t,'done','✓'))+
+    sec('EN APROXIMACIÓN',`${UI.appDays} días o menos`,Z.appro,t=>rItem(t,phase(t)==='final'?'final':'',(phase(t)==='final'?'FINAL ':'')+etaTxt(hrsLeft(t))))+
+    sec('VENCIDAS','sobre el campo',Z.overs,t=>rItem(t,'over',(t.pri===1?'7700 ':'')+'+'+etaTxt(hrsLeft(t))))+
+    sec('EN RUTA',`más de ${UI.appDays} días`,Z.ruta.slice(0,12),t=>rItem(t,'',etaTxt(hrsLeft(t))))+
+    sec('EN ESPERA','circuito de espera',Z.holds,t=>rItem(t,phase(t)==='over'?'over':'',t.due?etaTxt(hrsLeft(t)):'—'))+
+    sec('EN PLATAFORMA','sin fecha · sin iniciar',Z.parked,t=>rItem(t,isStale(t)?'stale':'',platDays(t)+'d',`<button type="button" class="rtko" data-tko="${esc(t.id)}" title="Iniciar la tarea (despegar)">✈</button>`))+
+    sec('EN VUELO','sin fecha · iniciadas',Z.deps,t=>rItem(t,'dep','+'+etaTxt(depHours(t))))+
+    sec('ATERRIZADAS','concluidas con fecha · 7 días',Z.landed,t=>rItem(t,'done','✓'))+
+    sec('DESPEGADAS','concluidas sin fecha · 7 días',Z.departed,t=>rItem(t,'done','✓'))+
     `<div class="rlegend">
-<b style="color:#b4ffcb">✈</b> Llegada en curso: vuela hacia la pista por la ruta de su área<br>
-<b style="color:#8fd9a6">✈ hueco</b> Llegada pendiente (con fecha, aún sin empezar)<br>
-<b style="color:#ffb000">✈</b> Aproximación final por el localizador LOC 27<br>
+<b style="color:#b4ffcb">✈</b> EN RUTA: llega desde su sector hacia la pista (más de ${UI.appDays} días)<br>
+<b style="color:#ffb000">✈</b> EN APROXIMACIÓN: por el localizador LOC 27 desde el IAF (${UI.appDays} días o menos)<br>
+<b style="color:#ffb000">✈ intermitente</b> Aproximación final: ha pasado el FAF<br>
 <b style="color:#ff4d3d">✈</b> Vencida: orbita sobre el campo · 7700 = prioridad 1<br>
-<b style="color:#ffb000">◌</b> Circuito de espera (esperando a terceros)<br>
-<b style="color:#6fbf8a">✈</b> Aparcada en plataforma: sin fecha, sin iniciar<br>
-<b style="color:#55e6ff">✈</b> Parpadeo azul: demasiado tiempo en plataforma<br>
-<b style="color:#55e6ff">✈</b> Salida: tarea sin fecha iniciada, se aleja por la SID<br>
-Distancia al centro: en llegadas, tiempo hasta el plazo; en salidas, tiempo desde el despegue. ◯ = prioridad 1 · FL = avance.<br>
+✈ hueco = aún sin iniciar · relleno = iniciada<br>
+<b style="color:#ffb000">◌</b> EN ESPERA: circuito de espera (pendiente de terceros)<br>
+<b style="color:#6fbf8a">✈</b> EN PLATAFORMA: sin fecha, sin iniciar · <b style="color:#55e6ff">azul intermitente</b>: espera demasiado<br>
+<b style="color:#55e6ff">✈</b> EN VUELO: sin fecha, iniciada; se aleja por la SID<br>
+Distancia al centro: en llegadas, tiempo hasta el plazo; en vuelo, tiempo desde el despegue. ◯ = prioridad 1 · FL = avance.<br>
 Clic en un avión o en la lista: abrir la ficha · ✈: despegar.</div>`;
 }
 (function wireRadar(){
