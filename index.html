@@ -64,6 +64,14 @@ button{font-family:inherit}
 .chip:hover{border-color:#6a7884}
 .search{background:#0a0d10;border:1px solid #39424a;color:var(--phos);font-family:var(--mono);padding:6px 8px;font-size:12px;width:230px;max-width:100%;border-radius:2px;letter-spacing:.06em}
 .search::placeholder{color:#3f5a48}
+.qwrap{position:relative;display:flex;align-items:center}
+.qclear{position:absolute;right:3px;background:#2a323a;border:1px solid #46515b;color:#ffd88a;font-size:11px;padding:2px 6px;cursor:pointer;border-radius:2px;font-family:var(--mono)}
+.search.on{border-color:var(--amber);color:#ffd88a;background:#1d1606;padding-right:30px}
+.fbanner{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;padding:7px 16px;background:#2a1f05;border-bottom:1px solid #6e5310;color:#ffd88a;font-size:12px;letter-spacing:.08em}
+.fbanner b{color:#fff}
+.fbanner button{background:#6e5310;border:1px solid #b3891f;color:#fff3cf;font-family:var(--mono);font-size:11px;letter-spacing:.1em;padding:5px 10px;cursor:pointer;border-radius:2px}
+.fbanner button:hover{background:#856617}
+.empty.filt{color:#c9a24a}
 .toggle{font-size:11px;color:#9aa7b2;display:flex;align-items:center;gap:6px;letter-spacing:.1em;cursor:pointer;user-select:none}
 
 .bays{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:12px;padding:12px 16px 16px;align-items:start}
@@ -331,13 +339,14 @@ select.f option{background:#aaaaaa;color:#000}
   </header>
   <nav class="filters">
     <div id="chips" class="chips"></div>
-    <input id="q" class="search" type="search" placeholder="BUSCAR INDICATIVO / TEXTO" autocomplete="off" spellcheck="false">
+    <div class="qwrap"><input id="q" class="search" type="text" placeholder="BUSCAR INDICATIVO / TEXTO" autocomplete="off" spellcheck="false" enterkeyhint="search"><button type="button" id="qClear" class="qclear hidden" title="Borrar la búsqueda (Esc)">✕</button></div>
     <label class="toggle"><input type="checkbox" id="showDone"> VER ATERRIZADAS</label>
     <label class="toggle" title="Cuántos días antes del plazo empieza a parpadear la ficha">APROX. FINAL
       <select id="appDays" class="appsel"><option value="0">EL MISMO DÍA</option><option value="1">1 DÍA ANTES</option><option value="2">2 DÍAS ANTES</option><option value="3">3 DÍAS ANTES</option><option value="5">5 DÍAS ANTES</option><option value="7">7 DÍAS ANTES</option></select></label>
     <label class="toggle" title="Las fichas sin fecha que lleven este tiempo en plataforma sin despegar parpadean en azul">PARPADEO EN PLATAFORMA
       <select id="staleDays" class="appsel"><option value="1">1 DÍA</option><option value="3">3 DÍAS</option><option value="7">7 DÍAS</option><option value="14">14 DÍAS</option><option value="30">30 DÍAS</option></select></label>
   </nav>
+  <div id="fbanner" class="fbanner hidden" role="status"></div>
   <main class="bays" id="bays"></main>
   <footer class="legend">
     <span><i style="background:#f6c9bb"></i>P1 URGENTE</span>
@@ -348,7 +357,7 @@ select.f option{background:#aaaaaa;color:#000}
     <span><i style="background:var(--amber)"></i>APROXIMACIÓN FINAL (PARPADEA)</span>
     <span><i style="background:#55e6ff"></i>DEMASIADO TIEMPO EN PLATAFORMA (PARPADEA)</span>
     <span>✈ DESPEGAR: INICIAR UNA TAREA SIN FECHA</span>
-    <span>· CLIC EN FICHA: EDITAR · ARRASTRAR O ▲▼: CAMBIAR DE BAHÍA · ✕ O SUPR: ELIMINAR (CTRL+Z DESHACE) · TECLAS N (NUEVA) · D (dBASE) · R (RADAR) · / (BUSCAR)</span>
+    <span>· CLIC EN FICHA: EDITAR · ARRASTRAR O ▲▼: CAMBIAR DE BAHÍA · ✕ O SUPR DOS VECES: ELIMINAR (CTRL+Z DESHACE) · TECLAS N (NUEVA) · D (dBASE) · R (RADAR)</span>
   </footer>
   <div id="toast" class="toast hidden" role="status"><span id="toastTxt"></span><button type="button" id="toastUndo">↶ DESHACER</button><button type="button" id="toastAct" class="hidden"></button><button type="button" id="toastX" title="Cerrar">✕</button></div>
 </div>
@@ -479,7 +488,7 @@ Abriendo C:\PEPE\TAREAS.DBF …
 /* =========================================================
    CONSTANTES Y UTILIDADES
    ========================================================= */
-const VERSION='1.5';
+const VERSION='1.6';
 const LS_KEY='pepe-atc-db-v1', LS_SYNC='pepe-atc-sync-v1', LS_UI='pepe-atc-ui-v1';
 const STATUS=[
   {k:'PEND',bay:'EN PLATAFORMA',sub:'pendientes'},
@@ -706,11 +715,23 @@ function renderBoard(){
   const q=Q.trim().toLowerCase();
   const vis=t=>!UI.hidden.includes(t.area)&&(!q||(codeOf(t)+' '+t.title+' '+t.who+' '+t.notes).toLowerCase().includes(q));
   const cutoff=now()-14*864e5;
+  const inWin=t=>t.status!=='HECH'||(t.doneAt||t.updatedAt)>=cutoff;
+  const hiddenBy=live.filter(t=>inWin(t)&&!vis(t)&&(t.status!=='HECH'||UI.showDone));
+  const fb=$('#fbanner');
+  if(Q.trim()||UI.hidden.length){
+    const parts=[];
+    if(Q.trim())parts.push(`búsqueda «<b>${esc(Q.trim())}</b>»`);
+    if(UI.hidden.length)parts.push(`áreas ocultas: <b>${esc(UI.hidden.join(', '))}</b>`);
+    fb.innerHTML=`<span>⚠ FILTRO ACTIVO · ${parts.join(' · ')} · <b>${hiddenBy.length}</b> ficha(s) no se muestran</span><button type="button" id="fbClear">✕ MOSTRAR TODAS</button>`;
+    fb.classList.remove('hidden');
+  }else fb.classList.add('hidden');
+  $('#q').classList.toggle('on',!!Q);$('#qClear').classList.toggle('hidden',!Q);
   $('#bays').innerHTML=STATUS.filter(s=>s.k!=='HECH'||UI.showDone).map(s=>{
+    const nh=hiddenBy.filter(t=>t.status===s.k).length;
     let list=live.filter(t=>t.status===s.k&&vis(t));
     if(s.k==='HECH')list=list.filter(t=>(t.doneAt||t.updatedAt)>=cutoff).sort((a,b)=>(b.doneAt||b.updatedAt)-(a.doneAt||a.updatedAt)).slice(0,40);
     else list.sort(taskSort);
-    return `<section class="bay" data-s="${s.k}"><h2>${s.bay}<small>${s.sub}</small><span class="n">${list.length}</span>${s.k==='HECH'&&list.length?'<button type="button" class="baybtn" data-clear="HECH" title="Eliminar todas las fichas aterrizadas visibles">VACIAR</button>':''}</h2><div class="rack" data-s="${s.k}">${list.map(stripHTML).join('')||'<div class="empty">— SIN TRÁFICO —</div>'}</div></section>`;
+    return `<section class="bay" data-s="${s.k}"><h2>${s.bay}<small>${s.sub}</small><span class="n">${list.length}</span>${s.k==='HECH'&&list.length?'<button type="button" class="baybtn" data-clear="HECH" title="Eliminar todas las fichas aterrizadas visibles">VACIAR</button>':''}</h2><div class="rack" data-s="${s.k}">${list.map(stripHTML).join('')||(nh?`<div class="empty filt">— ${nh} OCULTA(S) POR EL FILTRO —</div>`:'<div class="empty">— SIN TRÁFICO —</div>')}</div></section>`;
   }).join('');
   if(RADAR.open)renderRadarList();
 }
@@ -791,6 +812,8 @@ function focusStrip(id,flash){const s=document.querySelector(`.strip[data-id="${
     saveUI();renderFilters();renderBoard();
   });
   $('#q').addEventListener('input',e=>{Q=e.target.value;renderBoard()});
+  $('#qClear').onclick=()=>{clearSearch();$('#q').focus()};
+  $('#fbanner').addEventListener('click',e=>{if(e.target.closest('#fbClear'))clearFilters()});
   $('#showDone').addEventListener('change',e=>{UI.showDone=e.target.checked;saveUI();renderBoard()});
   $('#appDays').addEventListener('change',e=>{UI.approach=+e.target.value;saveUI();renderBoard()});
   $('#staleDays').addEventListener('change',e=>{UI.stale=+e.target.value;saveUI();renderBoard()});
@@ -802,24 +825,31 @@ function focusStrip(id,flash){const s=document.querySelector(`.strip[data-id="${
   $('#toastX').onclick=hideToast;
   $('#toastAct').onclick=()=>{const f=toastFn;hideToast();if(f)f()};
 })();
+function clearSearch(){Q='';$('#q').value='';renderBoard()}
+function clearFilters(){Q='';$('#q').value='';UI.hidden=[];saveUI();renderFilters();renderBoard();$('#q').blur()}
+let delArm=null,delAt=0;
 function boardKey(e){
   if(RADAR.open){if(e.key==='Escape'){e.preventDefault();closeRadar()}return}
   const tg=e.target;
   const inField=tg.matches&&tg.matches('input,textarea,select');
   if((e.ctrlKey||e.metaKey)&&!e.altKey&&(e.key==='z'||e.key==='Z')&&!inField){e.preventDefault();boardUndo();return}
   if(e.ctrlKey||e.metaKey||e.altKey)return;
-  if(tg.matches&&tg.matches('input,textarea,select')){if(e.key==='Escape')tg.blur();return}
+  if(tg.matches&&tg.matches('input,textarea,select')){if(e.key==='Escape'){if(tg.id==='q')clearSearch();tg.blur()}if(e.key==='Enter'&&tg.id==='q')tg.blur();return}
   if(tg.classList&&tg.classList.contains('strip')){
     const t=byId(tg.dataset.id);
     if(e.key==='Enter'){e.preventDefault();openDb('edit',t.id);return}
-    if(e.key==='Delete'){e.preventDefault();boardDelete(t);return}
+    if(e.key==='Delete'){
+      e.preventDefault();
+      if(delArm===t.id&&now()-delAt<3000){delArm=null;boardDelete(t)}
+      else{delArm=t.id;delAt=now();toast(`Pulse Supr otra vez para eliminar ${codeOf(t)}`,false)}
+      return;
+    }
     if(e.shiftKey&&(e.key==='ArrowDown'||e.key==='ArrowUp'||e.key==='ArrowRight'||e.key==='ArrowLeft')){e.preventDefault();moveTask(t,(e.key==='ArrowDown'||e.key==='ArrowRight')?1:-1);focusStrip(t.id,true);return}
   }
   const k=e.key.toLowerCase();
   if(k==='n'){e.preventDefault();openDb('new')}
   else if(k==='d'){e.preventDefault();openDb()}
   else if(k==='r'){e.preventDefault();openRadar()}
-  else if(k==='/'){e.preventDefault();$('#q').focus()}
 }
 function tickClock(){
   const d=new Date();
