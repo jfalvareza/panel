@@ -638,7 +638,7 @@ var __spreadValues = (a, b) => {
   return a;
 };
 var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
-const VERSION = "3.2";
+const VERSION = "3.3";
 const LS = (() => {
   try {
     const k = "__panel_test";
@@ -4153,16 +4153,25 @@ function bridgeCode(key) {
  * 2) Implementar › Nueva implementación › Aplicación web
  *      Ejecutar como: Yo    ·    Quién tiene acceso: Cualquier usuario
  * 3) Copie la URL que termina en /exec y péguela en el panel.
+ * PERMISOS: con «autorizar» elegida en la lista de funciones, pulse ▶ Ejecutar
+ *           y acepte los permisos de Gmail y Calendar (sólo hace falta una vez).
  */
 const CLAVE = '${key}';
+
+function autorizar() {
+  // Sólo sirve para que Google pida (y compruebe) los permisos de Gmail y Calendar.
+  const n = GmailApp.getInboxUnreadCount();
+  const c = CalendarApp.getAllCalendars().length;
+  Logger.log('Permisos correctos · ' + Session.getEffectiveUser().getEmail() + ' · ' + n + ' correos sin leer · ' + c + ' calendarios');
+}
 
 function doGet(e) {
   const p = (e && e.parameter) || {};
   let res;
   try {
     if (p.k !== CLAVE) res = { ok: false, error: 'Clave incorrecta' };
-    else if (p.op === 'ping') res = { ok: true, user: Session.getEffectiveUser().getEmail(), version: 2 };
-    else if (p.op === 'mail') res = { ok: true, user: Session.getEffectiveUser().getEmail(), version: 2, items: correos(p.q || 'newer_than:30d', Number(p.max) || 50) };
+    else if (p.op === 'ping') res = { ok: true, user: Session.getEffectiveUser().getEmail(), version: 3 };
+    else if (p.op === 'mail') res = { ok: true, user: Session.getEffectiveUser().getEmail(), version: 3, items: correos(p.q || 'newer_than:30d', Number(p.max) || 50) };
     else if (p.op === 'cals') res = { ok: true, items: CalendarApp.getAllCalendars().map(c => ({ id: c.getId(), name: c.getName(), primary: c.isMyPrimaryCalendar() })) };
     else if (p.op === 'cal') res = { ok: true, items: eventos(p.id, Number(p.days) || 60) };
     else res = { ok: false, error: 'Operación desconocida' };
@@ -4361,7 +4370,7 @@ function bridgeCheck(d) {
   if (!d || !d.ok) {
     const er = d && d.error || "Error del puente";
     if (er === "Clave incorrecta") throw Object.assign(new Error("La clave no coincide con la del puente: copie de nuevo el código del puente en script.google.com e impleméntelo otra vez (Gestionar implementaciones › Editar › Nueva versión)."), { cfg: true });
-    if (/permission|permiso|authoriz|autoriz/i.test(er)) throw new Error("El puente no tiene permiso: abra el proyecto en script.google.com, pulse «Ejecutar» una vez y acepte los permisos. (" + er + ")");
+    if (/permission|permiso|authoriz|autoriz/i.test(er)) throw Object.assign(new Error("Google todavía no ha dado permiso al puente para leer Gmail/Calendar. En script.google.com abra el proyecto del puente, elija «autorizar» (o «doGet») en la lista de funciones junto a ▶ Ejecutar, pulse Ejecutar › Revisar permisos › su cuenta › Configuración avanzada › Ir a… › Permitir. Compruebe también que la implementación se ejecuta como «Yo». (Detalle: " + er + ")"), { cfg: true });
     throw new Error(er);
   }
   if (d.user) IMP.user = d.user;
@@ -4778,8 +4787,9 @@ function showBridgeCode() {
 2. Borre lo que haya y pegue el código (botón «Copiar»). Guarde (icono del disquete).
 3. Arriba: <b>Implementar › Nueva implementación</b> · tipo <b>Aplicación web</b>
    Ejecutar como: <b>Yo</b> · Quién tiene acceso: <b>Cualquier usuario</b> · Implementar
-4. Autorice el acceso (si avisa «Google no ha verificado esta aplicación»:
-   Configuración avanzada › Ir a … › Permitir). Es su propio programa.
+4. <b>Permisos</b>: en la lista de funciones (junto a ▶ Ejecutar) elija <b>autorizar</b> y pulse
+   <b>Ejecutar</b> › Revisar permisos › su cuenta › (si avisa «Google no ha verificado esta
+   aplicación») Configuración avanzada › Ir a … › <b>Permitir</b>. Es su propio programa.
 5. Copie la «URL de la aplicación web» (termina en /exec), péguela aquí y pulse F5.</pre>
 <textarea id="bridgeTa" class="bridgecode" readonly spellcheck="false">${esc(code)}</textarea>
 <button type="button" class="dbtn" id="bridgeCopy">&lt; Copiar el código &gt;</button> <span id="bridgeMsg"></span>` });
